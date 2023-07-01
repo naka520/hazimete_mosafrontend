@@ -1,6 +1,7 @@
 // import { Link } from "react-router-dom";
 import React from "react";
 import { Box } from "@mui/material";
+import Header from "./../header";
 
 const App: React.FC = () => {
   return (
