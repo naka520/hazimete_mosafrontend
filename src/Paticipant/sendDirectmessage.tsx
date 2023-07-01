@@ -43,7 +43,7 @@ function SendDirectmessage() {
           label="DM送信"
           multiline
           rows={8}
-          defaultValue="DMを記入してください"
+          defaultValue=""
           sx={{ width: '70%', height: '100%' }}
         />
       </div>
