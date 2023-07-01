@@ -8,7 +8,7 @@ import Board from "./Administrator/Board";
 import Subboard from "./Administrator/Subboard";
 import Administrator from "./administrator";
 import PaticipateSignup from "./Paticipant/Signup";
-import ParticipantLogin from "./Paticipant/Login";
+import PaticipantLogin from "./Paticipant/Login";
 import BoardRegistration from "./Paticipant/boardRegistration";
 import BoardRegistrationResult from "./Paticipant/boardRegistrationResult";
 import BoardUpdate from "./Paticipant/boardUpdate";
@@ -34,7 +34,7 @@ function App() {
             element={<Subboard />}
           />
           <Route path="/Paticipant/Signup" element={<PaticipateSignup />} />
-          <Route path="/Paticipant/Login" element={<ParticipantLogin />} />
+          <Route path="/Paticipant/Login" element={<PaticipantLogin />} />
           <Route
             path="/Paticipant/SendDirectMessage/:board_uuid"
             element={<SendDirectmessage />}
