@@ -1,4 +1,5 @@
 // import { Link } from "react-router-dom";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Header from "./../header";
 import * as React from 'react';
@@ -131,3 +132,4 @@ function BoardUpdate() {
 }
 
 export default BoardUpdate;
+
