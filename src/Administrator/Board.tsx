@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
-function AdministratorBoard() {
+function Board() {
   return <div></div>;
 }
 
-export default AdministratorBoard;
+export default Board;

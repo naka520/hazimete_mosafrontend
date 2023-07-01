@@ -14,8 +14,13 @@ const theme: Theme = createTheme({
   },
 });
 
-function Signup(): any {
-  return <ThemeProvider theme={theme}></ThemeProvider>;
+function AdministratorSignup(): any {
+  return (
+    <div>
+      <p>サインアップします</p>
+    </div>
+    // <ThemeProvider theme={theme}></ThemeProvider>
+  );
 }
 
-export default Signup;
+export default AdministratorSignup;
