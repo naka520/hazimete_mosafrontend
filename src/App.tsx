@@ -28,35 +28,35 @@ function App() {
           />
           <Route path="/Administrator/Login" element={<AdministratorLogin />} />
           <Route path="/Administrator" element={<Administrator />} />
-          <Route path="/Administrator/{board_uuid}" element={<Board />} />
+          <Route path="/Administrator/:board_uuid" element={<Board />} />
           <Route
-            path="/Administrator/{board_uuid}/{subboard_uuid}"
+            path="/Administrator/:board_uuid/:subboard_uuid"
             element={<Subboard />}
           />
           <Route path="/Paticipant/Signup" element={<PaticipateSignup />} />
           <Route path="/Paticipant/Login" element={<PaticipantLogin />} />
           <Route
-            path="/Paticipant/SendDirectMessage/{board_uuid}"
+            path="/Paticipant/SendDirectMessage/:board_uuid"
             element={<SendDirectmessage />}
           />
           <Route
-            path="/Paticipant/SendDirectMessage/{board_uuid}/result"
+            path="/Paticipant/SendDirectMessage/:board_uuid/result"
             element={<SendDirectmessageResult />}
           />
           <Route
-            path="/Paticipant/BoardRegistration/{board_uuid}"
+            path="/Paticipant/BoardRegistration/:board_uuid"
             element={<BoardRegistration />}
           />
           <Route
-            path="/Paticipant/BoardRegistration/{board_uuid}/result"
+            path="/Paticipant/BoardRegistration/:board_uuid/result"
             element={<BoardRegistrationResult />}
           />
           <Route
-            path="/Paticipant/BoardUpdate/{board_uuid}"
+            path="/Paticipant/BoardUpdate/:board_uuid"
             element={<BoardUpdate />}
           />
           <Route
-            path="/Paticipant/BoardUpdate/{board_uuid}/result"
+            path="/Paticipant/BoardUpdate/:board_uuid/result"
             element={<BoardUpdateResult />}
           />
           <Route path="*" element={<NotFound />} />
