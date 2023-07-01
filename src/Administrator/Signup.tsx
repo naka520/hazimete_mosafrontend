@@ -18,7 +18,6 @@ function AdministratorSignup(): any {
   return (
     <div>
       <Header />
-      <p>サインアップします</p>
     </div>
     // <ThemeProvider theme={theme}></ThemeProvider>
   );

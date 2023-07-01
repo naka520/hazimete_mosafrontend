@@ -84,13 +84,13 @@ const App: React.FC = () => {
               />
             </Box>
             <ThemeProvider theme={theme}>
-              <Box sx={{ paddingLeft: "80px", paddingTop: "30px" }}>
-                <Button variant="contained">アカウント作成</Button>
-              </Box>
               <Box sx={{ paddingLeft: "100px", paddingTop: "30px" }}>
                 <Button variant="contained" color="secondary">
                   <Typography color="primary">ログイン</Typography>
                 </Button>
+              </Box>
+              <Box sx={{ paddingLeft: "80px", paddingTop: "30px" }}>
+                <Button variant="contained">アカウント作成</Button>
               </Box>
             </ThemeProvider>
           </Box>
