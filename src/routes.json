@@ -1,0 +1,11 @@
+{
+  "routes": [
+    {
+      "route": "/*",
+      "fallback": {
+        "type": "staticFiles",
+        "path": "/index.html"
+      }
+    }
+  ]
+}
