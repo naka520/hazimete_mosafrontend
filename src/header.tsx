@@ -35,9 +35,9 @@ export default function ButtonAppBar() {
               sx={{ "& > :not(style) + :not(style)": { marginLeft: "8px" } }}
             >
               <Button variant="contained" color="secondary">
-                <Typography color="primary">Contained</Typography>
+                <Typography color="primary">ログイン</Typography>
               </Button>
-              <Button variant="contained">Outlined</Button>
+              <Button variant="contained">アカウント作成</Button>
             </Box>
           </Toolbar>
         </AppBar>
