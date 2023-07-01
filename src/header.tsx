@@ -29,7 +29,7 @@ export default function ButtonAppBar() {
         >
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              WebBorad
+              WebBoard
             </Typography>
             <Box
               sx={{ "& > :not(style) + :not(style)": { marginLeft: "8px" } }}
