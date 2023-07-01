@@ -68,7 +68,7 @@ function BoardUpdate() {
           justifyContent: "center",
           alignItems: "center",
           minHeight: "30vh",
-          fontSize: "4rem", // フォントサイズを4remに設定
+          fontSize: "3rem", // フォントサイズを4remに設定
         }}
       >
         <h1>ロール更新完了</h1>
