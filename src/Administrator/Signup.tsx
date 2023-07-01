@@ -114,4 +114,5 @@ const AdministratorSignup: React.FC = () => {
   );
 };
 
+
 export default AdministratorSignup;
