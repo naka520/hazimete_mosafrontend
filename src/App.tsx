@@ -21,6 +21,7 @@ function App() {
   return (
     <div>
       <Header />
+      <Header />
       <BrowserRouter>
         <Routes>
           <Route
