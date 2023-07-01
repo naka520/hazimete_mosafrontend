@@ -20,7 +20,6 @@ import NotFound from "./notfound";
 function App() {
   return (
     <div>
-      <Header />
       <BrowserRouter>
         <Routes>
           <Route

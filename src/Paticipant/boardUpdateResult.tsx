@@ -1,7 +1,11 @@
 // import { Link } from "react-router-dom";
-
+import Header from "./../header";
 function BoardUpdateResult() {
-  return <div></div>;
+  return (
+    <div>
+      <Header />
+    </div>
+  );
 }
 
 export default BoardUpdateResult;
