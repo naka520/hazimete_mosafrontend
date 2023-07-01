@@ -32,7 +32,7 @@ const theme = createTheme({
   },
 });
 
-const App: React.FC = () => {
+const AdministratorLogin: React.FC = () => {
   return (
     <div>
       <Header />
@@ -100,4 +100,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AdministratorLogin;
