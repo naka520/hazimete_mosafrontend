@@ -61,7 +61,7 @@ function BoardUpdate() {
   return (
     <div>
       <Header />
-      <SubHeader />
+      <SubHeader title="体育祭"/>
       <Box
         sx={{
           display: "flex",
