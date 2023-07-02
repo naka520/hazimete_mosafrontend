@@ -82,7 +82,7 @@ function Subboard() {
   return (
     <div style={{ height: 400, width: '100%' }}>
       <Header />
-      <SubHeader />
+      <SubHeader title="体育祭"/>
       <React.Fragment>
       <CssBaseline />
       <Container maxWidth="xl">

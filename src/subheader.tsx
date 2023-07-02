@@ -34,7 +34,7 @@ const theme = createTheme({
   },
 });
 
-export default function ButtonAppBar() {
+export default function SubHeader({ title }: { title: string }) {
   return (
     <ThemeProvider theme={theme}>
       <Box>
@@ -47,7 +47,7 @@ export default function ButtonAppBar() {
         >
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              体育祭
+              {title}
             </Typography>
           </Toolbar>
         </AppBar>
