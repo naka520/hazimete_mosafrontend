@@ -7,7 +7,7 @@ function Board() {
   return (
     <div>
       <Header />
-      <SubHeader />
+      <SubHeader title="体育祭"/>
     </div>
   );
 }
