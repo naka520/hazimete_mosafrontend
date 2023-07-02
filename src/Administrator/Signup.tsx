@@ -44,11 +44,11 @@ interface LoginResponse {
   };
 }
 
-interface LoginRequest {
-  username: string;
-  password: string;
-  line_user_uuid?: string;
-}
+// interface LoginRequest {
+//   username: string;
+//   password: string;
+//   line_user_uuid?: string;
+// }
 
 interface SignupRequest {
   username: string;
@@ -56,13 +56,13 @@ interface SignupRequest {
   line_user_uuid?: string;
 }
 
-const login = async (request: LoginRequest): Promise<LoginResponse> => {
-  const response = await axios.post<LoginResponse>(
-    "https://mosa-cup-backend.azurewebsites.net/api/v1/signin",
-    request
-  );
-  return response.data;
-};
+// const login = async (request: LoginRequest): Promise<LoginResponse> => {
+//   const response = await axios.post<LoginResponse>(
+//     "https://mosa-cup-backend.azurewebsites.net/api/v1/signin",
+//     request
+//   );
+//   return response.data;
+// };
 
 const AdministratorSignup: React.FC = () => {
   const [username, setUsername] = useState<string>("");
