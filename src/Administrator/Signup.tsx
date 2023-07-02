@@ -7,7 +7,6 @@ import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -69,9 +68,6 @@ const AdministratorSignup: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const param1 = query.get("line_user_id"); // クエリパラメータ名が"param1"の値を取得
 
   const endpointUrl =
     "https://mosa-cup-backend.azurewebsites.net/api/v1/signup";
