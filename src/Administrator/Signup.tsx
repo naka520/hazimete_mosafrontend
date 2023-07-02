@@ -1,23 +1,12 @@
-// import { ThemeProvider } from "@mui/material";
-// import { Theme } from "@mui/material/styles";
-// import { createTheme } from "@mui/material/styles";
-
-// カラーテーマの定義
-// const theme: Theme = createTheme({
-//   palette: {
-//     primary: {
-//       main: "#FF0000", // プライマリカラーを赤に設定
-//     },
-//     secondary: {
-//       main: "#06C756", // セカンダリカラーを緑に設定
-//     },
-//   },
-// });
+// import { Link } from "react-router-dom";
 import Header from "./../header";
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -46,7 +35,60 @@ const theme = createTheme({
   },
 });
 
+interface LoginResponse {
+  token: string;
+  user: {
+    username: string;
+    password: string;
+    line_user_uuid?: string;
+  };
+}
+
+interface LoginRequest {
+  username: string;
+  password: string;
+  line_user_uuid?: string;
+}
+
+interface SignupRequest {
+  username: string;
+  password: string;
+  line_user_uuid?: string;
+}
+
+const login = async (request: LoginRequest): Promise<LoginResponse> => {
+  const response = await axios.post<LoginResponse>(
+    "https://mosa-cup-backend.azurewebsites.net/api/v1/signin",
+    request
+  );
+  return response.data;
+};
+
 const AdministratorSignup: React.FC = () => {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate();
+  const endpointUrl =
+    "https://mosa-cup-backend.azurewebsites.net/api/v1/signup";
+  const handleCheck = async () => {
+    const requestData: SignupRequest = {
+      username: username,
+      password: password,
+      line_user_uuid: undefined,
+    };
+
+    try {
+      const response = await axios.post<LoginResponse>(
+        endpointUrl,
+        requestData
+      );
+      console.log("Success:", response);
+      navigate("/Administrator/Login");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -86,6 +128,10 @@ const AdministratorSignup: React.FC = () => {
                 label="ユーザーネーム"
                 variant="outlined"
                 className="bg-white"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
               />
             </Box>
 
@@ -95,11 +141,18 @@ const AdministratorSignup: React.FC = () => {
                 label="パスワード"
                 variant="outlined"
                 className="bg-white"
+                value={password}
+                type="password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
               />
             </Box>
             <ThemeProvider theme={theme}>
               <Box sx={{ paddingLeft: "80px", paddingTop: "30px" }}>
-                <Button variant="contained">アカウント作成</Button>
+                <Button variant="contained" onClick={handleCheck}>
+                  アカウント作成
+                </Button>
               </Box>
               <Box sx={{ paddingLeft: "100px", paddingTop: "30px" }}>
                 <Button variant="contained" color="secondary">
@@ -113,6 +166,4 @@ const AdministratorSignup: React.FC = () => {
     </div>
   );
 };
-
-
 export default AdministratorSignup;
