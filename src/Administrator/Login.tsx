@@ -61,7 +61,6 @@ const AdministratorLogin: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
-
   const endpointUrl =
     "https://mosa-cup-backend.azurewebsites.net/api/v1/signin";
 
