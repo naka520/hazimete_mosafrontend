@@ -73,7 +73,7 @@ const handleSendMessage = () => {
           label="DM送信"
           multiline
           rows={8}
-          defaultValue="DMを記入してください"
+          defaultValue=""
           sx={{ width: '70%', height: '100%' }}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
