@@ -5,8 +5,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from "@mui/material/Typography";
 import Stack from '@mui/material/Stack';
-import { useState,useEffect } from 'react'
-import SubHeader from "../subheader";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -36,70 +34,22 @@ const theme = createTheme({
 });
 
 function SendDirectmessage() {
-    const [message, setMessage] = useState(''); // メッセージの状態を管理するステートを追加
-    const [board,setBoard] = useState('')
-    // メッセージの送信処理を実装する関数
-
-    useEffect(() => {
-      // APIからボードのタイトルを取得する処理を実装します
-      const apiUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/my_boards`; // ボードの情報を取得するAPIのURLを指定します
-  
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          // レスポンスからボードのタイトルを取得してステートに設定します
-          setBoard(data.board_name);
-          console.log(board)
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }, []); 
-const handleSendMessage = () => {
-  const boardUuid = window.location.pathname.split("/")[3];
-  const apiUrl = 'https://api.example.com/send-message'; // 送信先のAPIのURLを指定します
-  const messageData = {
-    body: message,
-    board_uuid: boardUuid
-  }
-  // メッセージをAPIサーバに送信する処理を実装します
-  fetch(apiUrl, {
-    method: 'POST',
-    body: JSON.stringify(messageData), // メッセージをJSON形式で送信します
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(response => response.json())
-    .then(data => {
-      // レスポンスの処理を行います
-      console.log(data);
-    })
-    .catch(error => {
-      // エラーハンドリングを行います
-      console.error(error);
-    });
-};
-
   return (
     <div>
       <Header />
-      <SubHeader title={board} />
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <TextField
-          id="body"
+          id="outlined-multiline-static"
           label="DM送信"
           multiline
           rows={8}
           defaultValue=""
           sx={{ width: '70%', height: '100%' }}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
         />
       </div>
       <ThemeProvider theme={theme}>
         <Stack spacing={2} direction="row" position="static" sx={{ justifyContent: "center", backgroundColor: theme.palette.primary.main }}>
-          <Button variant="contained" color="secondary" onClick={handleSendMessage}>
+          <Button variant="contained" color="secondary">
             <Typography color="primary">
               <input type="submit" value="DM送信" />
             </Typography>
