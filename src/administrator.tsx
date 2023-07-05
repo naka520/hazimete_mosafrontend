@@ -79,7 +79,7 @@ function Administrator() {
   return (
     <div style={{ height: 400, width: '100%' }}>
       <Header />
-      <SubHeader title="体育祭"/>
+      <SubHeader title="イベント一覧"/>
       <React.Fragment>
       <CssBaseline />
       <Container maxWidth="xl">
