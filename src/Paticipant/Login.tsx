@@ -1,9 +1,11 @@
-// import { Link } from "react-router-dom";
-import Header from "./../header";
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
+import Header from "./../header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
+// import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -32,7 +34,54 @@ const theme = createTheme({
   },
 });
 
+interface LoginResponse {
+  access_token: string;
+}
+
+interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+// interface SignupRequest {
+//   username: string;
+//   password: string;
+//   line_user_uuid?: string;
+// }
+
+// const login = async (request: LoginRequest): Promise<LoginResponse> => {
+//   const response = await axios.post<LoginResponse>(
+//     "https://mosa-cup-backend.azurewebsites.net/api/v1/signin",
+//     request
+//   );
+//   return response.data;
+// };
 const ParticipantLogin: React.FC = () => {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const endpointUrl =
+    "https://mosa-cup-backend.azurewebsites.net/api/v1/signin";
+
+  const handleCheck = async () => {
+    const requestData: LoginRequest = {
+      username: username,
+      password: password,
+    };
+
+    try {
+      console.log(endpointUrl);
+      console.log(requestData);
+      const response = await axios.post<LoginResponse>(
+        endpointUrl,
+        requestData,
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+      localStorage.setItem("access_token", response.data.access_token);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <div>
       <Header />
@@ -72,6 +121,10 @@ const ParticipantLogin: React.FC = () => {
                 label="ユーザーネーム"
                 variant="outlined"
                 className="bg-white"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
               />
             </Box>
 
@@ -81,11 +134,20 @@ const ParticipantLogin: React.FC = () => {
                 label="パスワード"
                 variant="outlined"
                 className="bg-white"
+                value={password}
+                type="password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
               />
             </Box>
             <ThemeProvider theme={theme}>
               <Box sx={{ paddingLeft: "100px", paddingTop: "30px" }}>
-                <Button variant="contained" color="secondary">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleCheck}
+                >
                   <Typography color="primary">ログイン</Typography>
                 </Button>
               </Box>
@@ -99,4 +161,5 @@ const ParticipantLogin: React.FC = () => {
     </div>
   );
 };
+
 export default ParticipantLogin;
