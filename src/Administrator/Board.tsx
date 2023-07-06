@@ -20,6 +20,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 //import axios from "axios";
 import { useEffect } from "react";
+import Chip from '@mui/material/Chip';
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -62,17 +63,16 @@ const style = {
 };
 
 const columns: GridColDef[] = [
-  { field: "display_name", headerName: "名前", width: 170 },
-  { field: "id", headerName: "username", width: 130 },
+  { field: "id", headerName: "ロール名", width: 170 },
+  { field: "members", headerName: "人数", width: 130 },
 ];
 
 const rows = [
-  { display_name: "田中", id: "Ryuki" },
-  { display_name: "田中", id: "tanaka" },
-  { display_name: "田中", id: "Sato" },
-  { display_name: "田中", id: "Hayashi" },
-  { display_name: "田中", id: "Neko" },
-  { display_name: "田中", id: "God" },
+  { id: "体育祭", members: "4" },
+  { id: "文化祭", members: "2" },
+  { id: "入学式", members: "7" },
+  { id: "卒業式", members: "29" },
+  { id: "飲み会", members: "2" }
 ];
 
 interface UserData {
@@ -88,12 +88,17 @@ interface UserData {
 function Board() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
+  const [openThree, setOpenThree] = React.useState(false);
 
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
 
   const handleOpenTwo = () => setOpenTwo(true);
   const handleCloseTwo = () => setOpenTwo(false);
+
+  const handleOpenThree = () => setOpenThree(true);
+  const handleCloseThree = () => setOpenThree(false);
+
   const navigate = useNavigate();
   // useEffect(() => {
   //   const fetchUserData = async () => {
@@ -184,30 +189,23 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "1vh",
+                      minHeight: "4vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <TextField
-                      id="outlined-multiline-static"
-                      label="メッセージ"
-                      multiline
-                      rows={4}
-                      defaultValue=""
-                      sx={{ width: "70%", height: "100%" }}
-                    />
+                  <TextField id="outlined-basic" label="ロール名" variant="outlined" />
                   </Box>
                   <Box
                     sx={{
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "3vh",
+                      minHeight: "5vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
                     <Button variant="contained" sx={{ color: "#FFFFFF" }}>
-                      出席確認
+                      作成
                     </Button>
                   </Box>
                 </Box>
@@ -238,7 +236,20 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "1vh",
+                      minHeight: "2vh",
+                    }}
+                  ></Box>
+                  <Stack direction="row" spacing={1}>
+                    <p>メッセージ送信先：</p>
+                    <Chip label="体育祭" variant="outlined" />
+                    <Chip label="文化祭" variant="outlined" />
+                  </Stack>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "1.5vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -246,7 +257,7 @@ function Board() {
                       id="outlined-multiline-static"
                       label="メッセージ"
                       multiline
-                      rows={4}
+                      rows={3}
                       defaultValue=""
                       sx={{ width: "70%", height: "100%" }}
                     />
@@ -256,7 +267,7 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "3vh",
+                      minHeight: "2vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -266,9 +277,64 @@ function Board() {
                   </Box>
                 </Box>
               </Modal>
-              <Button variant="outlined" startIcon={<DeleteIcon />}>
+              <Button
+                onClick={handleOpenThree}
+                variant="outlined"
+                startIcon={<DeleteIcon />}
+              >
                 削除
               </Button>
+              <Modal
+                open={openThree}
+                onClose={handleCloseThree}
+                aria-labelledby="modal-modal-title-1"
+                aria-describedby="modal-modal-description-1"
+              >
+                <Box sx={style}>
+                  <Typography
+                    id="modal-modal-title"
+                    variant="h6"
+                    component="h2"
+                  >
+                    ロール削除
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "2vh",
+                    }}
+                  ></Box>
+                  <p>以下のロールを削除して良いですか？</p>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "3vh",
+                    }}
+                  ></Box>
+                  <Stack direction="row" spacing={1}>
+                    <p>削除するロール：</p>
+                    <Chip label="体育祭" variant="outlined" />
+                    <Chip label="文化祭" variant="outlined" />
+                  </Stack>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "6vh",
+                    }}
+                  ></Box>
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
+                      削除
+                    </Button>
+                  </Box>
+                </Box>
+              </Modal>
             </ThemeProvider>
           </Stack>
           <Box
