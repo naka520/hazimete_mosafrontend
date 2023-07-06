@@ -252,7 +252,7 @@ function Board() {
                       minHeight: "2vh",
                     }}
                   ></Box>
-                  <Stack direction="row" spacing={1}>
+                  <Stack direction="row" spacing={1} alignItems="center">
                     <p>メッセージ送信先：</p>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
