@@ -15,6 +15,8 @@ import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
+import { GridRowId } from "@mui/x-data-grid";
+import { useState } from "react";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -74,12 +76,18 @@ const rows = [
 function Administrator() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
+  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
 
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
 
   const handleOpenTwo = () => setOpenTwo(true);
   const handleCloseTwo = () => setOpenTwo(false);
+
+  const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+    setIsCheckboxSelected(selectionModel.length > 0);
+    console.log("選択された行のID:", selectionModel);
+  };
 
   return (
     <div style={{ height: 400, width: "100%" }}>
@@ -153,6 +161,7 @@ function Administrator() {
                 onClick={handleOpenTwo}
                 variant="outlined"
                 startIcon={<DeleteIcon />}
+                disabled={!isCheckboxSelected}
               >
                 イベント削除
               </Button>
@@ -227,6 +236,7 @@ function Administrator() {
             }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
+            onRowSelectionModelChange={handleSelectionModelChange}
           />
         </Container>
       </React.Fragment>
