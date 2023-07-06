@@ -95,27 +95,52 @@ function Board() {
   const handleOpenTwo = () => setOpenTwo(true);
   const handleCloseTwo = () => setOpenTwo(false);
   const navigate = useNavigate();
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const endpoint = "https://mosa-cup-backend.azurewebsites.net/api/v1/me";
+  //       const response = await fetch(endpoint);
+  //       console.log(response);
+  //       const userData: UserData = await response.json();
+  //       console.log(userData);
+  //       if (response.status == 401) {
+  //         navigate("/Administrator/Login");
+  //       }
+  //     } catch (error) {
+  //       console.error("APIの呼び出し中にエラーが発生しました。", error);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, [navigate]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [userData, setUserData] = React.useState<UserData | null>(null);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const endpoint = "https://mosa-cup-backend.azurewebsites.net/api/v1/me"; // エンドポイントの変数を定義
+        const endpoint = "https://mosa-cup-backend.azurewebsites.net/api/v1/me";
         const response = await fetch(endpoint);
-        if (response.ok) {
-          const userData: UserData = await response.json();
-          if (!userData) {
-            // navigate("/Administrator/Login");
-          }
-        } else {
-          navigate("/Administrator/Login");
-        }
+        const userData: UserData = await response.json();
+        setUserData(userData);
+        setIsLoading(false);
       } catch (error) {
         console.error("APIの呼び出し中にエラーが発生しました。", error);
+        setIsLoading(false);
       }
     };
 
     fetchUserData();
-  }, [navigate]);
+  }, []);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!userData) {
+    navigate("/Administrator/Login");
+    return null;
+  }
   return (
     <div style={{ height: 400, width: "100%" }}>
       <Header />
