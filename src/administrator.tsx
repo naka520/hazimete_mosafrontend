@@ -177,17 +177,8 @@ function Administrator() {
                     variant="h6"
                     component="h2"
                   >
-                    ロール削除
+                    イベント削除
                   </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "2vh",
-                    }}
-                  ></Box>
-                  <p>以下のロールを削除して良いですか？</p>
                   <Box
                     sx={{
                       display: "flex",
@@ -196,8 +187,8 @@ function Administrator() {
                       minHeight: "3vh",
                     }}
                   ></Box>
-                  <Stack direction="row" spacing={1}>
-                    <p>削除するロール：</p>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <p style={{ margin: 0 }}>削除するイベント：</p>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
                   </Stack>
@@ -206,7 +197,7 @@ function Administrator() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "3vh",
+                      minHeight: "6vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
