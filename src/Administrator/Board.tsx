@@ -217,7 +217,7 @@ function Board() {
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
                     <Button variant="contained" sx={{ color: "#FFFFFF" }}>
-                      作成
+                      ロール作成
                     </Button>
                   </Box>
                 </Box>
@@ -253,7 +253,7 @@ function Board() {
                     }}
                   ></Box>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <p>メッセージ送信先：</p>
+                    <p style={{ margin: 0 }}>メッセージ送信先：</p>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
                   </Stack>
@@ -321,7 +321,7 @@ function Board() {
                     }}
                   ></Box>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <p>削除するロール：</p>
+                    <p style={{ margin: 0 }}>削除するロール：</p>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
                   </Stack>
