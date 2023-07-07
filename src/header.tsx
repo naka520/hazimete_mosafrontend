@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 // import MenuIcon from "@mui/icons-material/Menu";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -101,11 +102,11 @@ export default function ButtonAppBar() {
                 >
                   <Button variant="contained" color="secondary">
                     <Typography color="primary">
-                      <a href={`/${firstLevelPath}/Login`}>ログイン</a>
+                      <Link to={`/${firstLevelPath}/Login`}>ログイン</Link>
                     </Typography>
                   </Button>
                   <Button variant="contained">
-                    <a href={`/${firstLevelPath}/Signup`}>アカウント作成</a>
+                    <Link to={`/${firstLevelPath}/Signup`}>アカウント作成</Link>
                   </Button>
                 </Box>
               </p>

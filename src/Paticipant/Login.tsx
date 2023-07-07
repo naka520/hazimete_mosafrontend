@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import Header from "./../header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-// import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 
@@ -152,7 +152,9 @@ const ParticipantLogin: React.FC = () => {
                 </Button>
               </Box>
               <Box sx={{ paddingLeft: "80px", paddingTop: "30px" }}>
-                <Button variant="contained">アカウント作成</Button>
+                <Button variant="contained">
+                  <Link to="/Paticipant/Signup">アカウント作成</Link>
+                </Button>
               </Box>
             </ThemeProvider>
           </Box>

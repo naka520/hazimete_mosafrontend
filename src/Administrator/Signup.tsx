@@ -4,7 +4,7 @@ import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 
@@ -157,7 +157,9 @@ const AdministratorSignup: React.FC = () => {
               </Box>
               <Box sx={{ paddingLeft: "100px", paddingTop: "30px" }}>
                 <Button variant="contained" color="secondary">
-                  <Typography color="primary">ログイン</Typography>
+                  <Typography color="primary">
+                    <Link to="/Administrator/Login">ログイン</Link>
+                  </Typography>
                 </Button>
               </Box>
             </ThemeProvider>
