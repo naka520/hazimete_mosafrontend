@@ -252,7 +252,7 @@ function Board() {
                       minHeight: "2vh",
                     }}
                   ></Box>
-                  <Stack direction="row" spacing={1}>
+                  <Stack direction="row" spacing={1} alignItems="center">
                     <p>メッセージ送信先：</p>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
@@ -317,19 +317,10 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "2vh",
-                    }}
-                  ></Box>
-                  <p>以下のロールを削除して良いですか？</p>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
                       minHeight: "3vh",
                     }}
                   ></Box>
-                  <Stack direction="row" spacing={1}>
+                  <Stack direction="row" spacing={1} alignItems="center">
                     <p>削除するロール：</p>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
@@ -339,7 +330,7 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "3vh",
+                      minHeight: "6vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
