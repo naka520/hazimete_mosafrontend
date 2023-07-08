@@ -20,7 +20,9 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 //import axios from "axios";
 import { useEffect } from "react";
-import Chip from '@mui/material/Chip';
+import Chip from "@mui/material/Chip";
+import { GridRowId } from "@mui/x-data-grid";
+import { useState } from "react";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -72,7 +74,7 @@ const rows = [
   { id: "文化祭", members: "2" },
   { id: "入学式", members: "7" },
   { id: "卒業式", members: "29" },
-  { id: "飲み会", members: "2" }
+  { id: "飲み会", members: "2" },
 ];
 
 interface UserData {
@@ -89,6 +91,7 @@ function Board() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
   const [openThree, setOpenThree] = React.useState(false);
+  const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
 
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
@@ -98,6 +101,11 @@ function Board() {
 
   const handleOpenThree = () => setOpenThree(true);
   const handleCloseThree = () => setOpenThree(false);
+
+  const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+    setIsCheckboxSelected(selectionModel.length > 0);
+    console.log("選択された行のID:", selectionModel);
+  };
 
   const navigate = useNavigate();
   // useEffect(() => {
@@ -193,7 +201,11 @@ function Board() {
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <TextField id="outlined-basic" label="ロール名" variant="outlined" />
+                    <TextField
+                      id="outlined-basic"
+                      label="ロール名"
+                      variant="outlined"
+                    />
                   </Box>
                   <Box
                     sx={{
@@ -214,6 +226,7 @@ function Board() {
                 onClick={handleOpenTwo}
                 variant="outlined"
                 startIcon={<EmailIcon />}
+                disabled={!isCheckboxSelected}
               >
                 メッセージ送信
               </Button>
@@ -249,7 +262,7 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "1.5vh",
+                      minHeight: "1vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -267,7 +280,7 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "2vh",
+                      minHeight: "1vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -281,6 +294,7 @@ function Board() {
                 onClick={handleOpenThree}
                 variant="outlined"
                 startIcon={<DeleteIcon />}
+                disabled={!isCheckboxSelected}
               >
                 削除
               </Button>
@@ -325,7 +339,7 @@ function Board() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "6vh",
+                      minHeight: "3vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -355,6 +369,7 @@ function Board() {
             }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
+            onRowSelectionModelChange={handleSelectionModelChange}
           />
         </Container>
       </React.Fragment>
