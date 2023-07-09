@@ -94,7 +94,7 @@ export default function ButtonAppBar() {
             {isLoggedIn ? (
               <p>{displayName}さん</p>
             ) : (
-              <p>
+              <div>
                 <Box
                   sx={{
                     "& > :not(style) + :not(style)": { marginLeft: "8px" },
@@ -109,7 +109,7 @@ export default function ButtonAppBar() {
                     <Link to={`/${firstLevelPath}/Signup`}>アカウント作成</Link>
                   </Button>
                 </Box>
-              </p>
+              </div>
             )}
           </Toolbar>
         </AppBar>
