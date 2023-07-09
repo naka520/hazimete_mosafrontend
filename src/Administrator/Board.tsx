@@ -16,13 +16,10 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-// import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-//import axios from "axios";
-import { useEffect } from "react";
 import Chip from "@mui/material/Chip";
 import { GridRowId } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -77,16 +74,6 @@ const rows = [
   { id: "飲み会", members: "2" },
 ];
 
-interface UserData {
-  user_uuid: string;
-  username: string;
-  display_name: string;
-  line_user: {
-    line_user_uuid: string;
-    user_id: string;
-  };
-}
-
 function Board() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
@@ -107,53 +94,27 @@ function Board() {
     console.log("選択された行のID:", selectionModel);
   };
 
-  const navigate = useNavigate();
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const endpoint = "https://mosa-cup-backend.azurewebsites.net/api/v1/me";
-  //       const response = await fetch(endpoint);
-  //       console.log(response);
-  //       const userData: UserData = await response.json();
-  //       console.log(userData);
-  //       if (response.status == 401) {
-  //         navigate("/Administrator/Login");
-  //       }
-  //     } catch (error) {
-  //       console.error("APIの呼び出し中にエラーが発生しました。", error);
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, [navigate]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [userData, setUserData] = React.useState<UserData | null>(null);
+  // ログイン確認処理
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const endpoint = "https://mosa-cup-backend.azurewebsites.net/api/v1/me";
-        const response = await fetch(endpoint);
-        const userData: UserData = await response.json();
-        setUserData(userData);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("APIの呼び出し中にエラーが発生しました。", error);
-        setIsLoading(false);
-      }
-    };
+    // ローカルストレージからaccess_tokenを取得する
+    const accessToken = localStorage.getItem("access_token");
 
-    fetchUserData();
+    // access_tokenが存在する場合はログイン済みとみなす
+    if (!accessToken) {
+      localStorage.setItem("redirect_path", window.location.pathname);
+      setRedirect(true);
+    } else {
+      localStorage.removeItem("redirect_path");
+    }
   }, []);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  console.log(redirect);
+  if (redirect) {
+    return <Navigate replace to="/Administrator/Login" />;
   }
-
-  if (!userData) {
-    navigate("/Administrator/Login");
-    return null;
-  }
+  // ログイン確認処理ここまで
   return (
     <div style={{ height: 400, width: "100%" }}>
       <Header />

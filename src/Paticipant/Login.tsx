@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import Header from "./../header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 
@@ -59,6 +59,7 @@ interface LoginRequest {
 const ParticipantLogin: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate();
 
   const endpointUrl =
     "https://mosa-cup-backend.azurewebsites.net/api/v1/signin";
@@ -78,6 +79,14 @@ const ParticipantLogin: React.FC = () => {
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
       localStorage.setItem("access_token", response.data.access_token);
+      const redirectPath = localStorage.getItem("redirect_path");
+      if (redirectPath) {
+        // リダイレクト前の画面に戻る
+        navigate(redirectPath);
+      } else {
+        // リダイレクト前の画面がない場合はデフォルトの画面(404)にリダイレクト
+        navigate("/");
+      }
     } catch (error) {
       console.error("Error:", error);
     }

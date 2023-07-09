@@ -14,6 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import CssBaseline from "@mui/material/CssBaseline";
 import SubHeader from "./../subheader";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -57,10 +59,32 @@ function BoardRegistrationResult() {
     setChecked(newChecked);
   };
 
+  // ログイン確認処理
+  const [redirect, setRedirect] = useState(false);
+
+  useEffect(() => {
+    // ローカルストレージからaccess_tokenを取得する
+    const accessToken = localStorage.getItem("access_token");
+
+    // access_tokenが存在する場合はログイン済みとみなす
+    if (!accessToken) {
+      localStorage.setItem("redirect_path", window.location.pathname);
+      setRedirect(true);
+    } else {
+      localStorage.removeItem("redirect_path");
+    }
+  }, []);
+
+  console.log(redirect);
+  if (redirect) {
+    return <Navigate replace to="/Administrator/Login" />;
+  }
+  // ログイン確認処理ここまで
+
   return (
     <div>
       <Header />
-      <SubHeader title="体育祭"/>
+      <SubHeader title="体育祭" />
       <Box
         sx={{
           display: "flex",
