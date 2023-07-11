@@ -10,6 +10,9 @@ import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import { useNavigate } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -39,11 +42,25 @@ const theme = createTheme({
 });
 
 export default function ButtonAppBar() {
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userData, setUserData] = useState(null);
   const [displayName, setDisplayName] = useState("");
   const [firstLevelPath, setFirstLevelPath] = useState("");
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/Administrator/Login", { replace: true });
+  };
 
   const endpointUrl = "https://mosa-cup-backend.azurewebsites.net/api/v1/me";
 
@@ -65,7 +82,7 @@ export default function ButtonAppBar() {
         .then((response) => {
           // APIからのレスポンスを受け取り、ユーザーデータをセット
           setUserData(response.data);
-          setDisplayName(response.data.display_name);
+          setDisplayName(response.data.display_name + "さん");
         })
         .catch((error) => {
           // エラーハンドリング
@@ -92,7 +109,36 @@ export default function ButtonAppBar() {
               WebBoard
             </Typography>
             {isLoggedIn ? (
-              <p>{displayName}さん</p>
+              <div>
+                <Button
+                  id="basic-button"
+                  aria-controls={open ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleClick}
+                  color="warning"
+                >
+                  <Typography color="black">{displayName}</Typography>
+                </Button>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  <MenuItem onClick={handleClose}>
+                    <Typography>
+                      <Link to={`/${firstLevelPath}/profile`}>Profile</Link>
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <Typography onClick={logout}>ログアウト</Typography>
+                  </MenuItem>
+                </Menu>
+              </div>
             ) : (
               <div>
                 <Box
