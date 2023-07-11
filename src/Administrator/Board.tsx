@@ -20,6 +20,8 @@ import Chip from "@mui/material/Chip";
 import { GridRowId } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import { Link } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -121,13 +123,27 @@ function Board() {
       <SubHeader title="体育祭" />
       <React.Fragment>
         <CssBaseline />
-        <Container maxWidth="xl">
+        <Container maxWidth="md">
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               minHeight: "10vh",
+            }}
+          ></Box>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Typography color="text.primary">
+              <Link to="/Administrator">イベント</Link>
+            </Typography>
+            <Typography color="text.primary">体育祭</Typography>
+          </Breadcrumbs>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "3vh",
             }}
           ></Box>
           <Stack direction="row" spacing={2}>
