@@ -129,7 +129,11 @@ export default function ButtonAppBar() {
                     "aria-labelledby": "basic-button",
                   }}
                 >
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem onClick={handleClose}>
+                    <Typography>
+                      <Link to={`/${firstLevelPath}/profile`}>Profile</Link>
+                    </Typography>
+                  </MenuItem>
                   <MenuItem onClick={handleClose}>
                     <Typography onClick={logout}>ログアウト</Typography>
                   </MenuItem>

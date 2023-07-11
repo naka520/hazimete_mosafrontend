@@ -3,12 +3,15 @@ import "./App.css";
 
 import AdministratorLogin from "./Administrator/Login";
 import AdministratorSignup from "./Administrator/Signup";
-
 import Board from "./Administrator/Board";
 import Subboard from "./Administrator/Subboard";
+import AdministratorProfile from "./Administrator/Profile";
+import AdministratorProfileChange from "./Administrator/ProfileChange";
 import Administrator from "./administrator";
 import PaticipateSignup from "./Paticipant/Signup";
 import PaticipantLogin from "./Paticipant/Login";
+import PaticipantProfile from "./Paticipant/Profile";
+import PaticipantProfileChange from "./Paticipant/ProfileChange";
 import BoardRegistration from "./Paticipant/boardRegistration";
 import BoardRegistrationResult from "./Paticipant/boardRegistrationResult";
 import BoardUpdate from "./Paticipant/boardUpdate";
@@ -27,6 +30,14 @@ function App() {
             element={<AdministratorSignup />}
           />
           <Route path="/Administrator/Login" element={<AdministratorLogin />} />
+          <Route
+            path="/Administrator/Profile"
+            element={<AdministratorProfile />}
+          />
+          <Route
+            path="/Administrator/Profile/Change"
+            element={<AdministratorProfileChange />}
+          />
           <Route path="/Administrator" element={<Administrator />} />
           <Route path="/Administrator/:board_uuid" element={<Board />} />
           <Route
@@ -35,6 +46,11 @@ function App() {
           />
           <Route path="/Paticipant/Signup" element={<PaticipateSignup />} />
           <Route path="/Paticipant/Login" element={<PaticipantLogin />} />
+          <Route path="/Paticipant/Profile" element={<PaticipantProfile />} />
+          <Route
+            path="/Paticipant/Profile/Change"
+            element={<PaticipantProfileChange />}
+          />
           <Route
             path="/Paticipant/SendDirectMessage/:board_uuid"
             element={<SendDirectmessage />}
