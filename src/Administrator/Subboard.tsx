@@ -218,7 +218,10 @@ function Subboard() {
                     }}
                   ></Box>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <p style={{ margin: 0 }}>DM送信先：</p>
+                    <Typography variant="body1" style={{ margin: 0 }}>
+                      DM送信先：
+                    </Typography>
+
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
                   </Stack>
@@ -286,7 +289,10 @@ function Subboard() {
                     }}
                   ></Box>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <p style={{ margin: 0 }}>削除するロール：</p>
+                    <Typography variant="body1" style={{ margin: 0 }}>
+                      削除するロール：
+                    </Typography>
+
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
                   </Stack>

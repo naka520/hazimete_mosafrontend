@@ -211,7 +211,9 @@ function Administrator() {
                     }}
                   ></Box>
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <p style={{ margin: 0 }}>削除するイベント：</p>
+                    <Typography variant="body1" style={{ margin: 0 }}>
+                      削除するイベント：
+                    </Typography>
                     <Chip label="体育祭" variant="outlined" />
                     <Chip label="文化祭" variant="outlined" />
                   </Stack>
