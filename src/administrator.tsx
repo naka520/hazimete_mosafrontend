@@ -67,6 +67,7 @@ type Row = {
   board_name: string;
   members: string;
   board_uuid: string;
+  isSelected: boolean;
 };
 
 const columns: GridColDef[] = [
@@ -94,6 +95,11 @@ function Administrator() {
   const handleCloseTwo = () => setOpenTwo(false);
 
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+    const updatedRows = gridRows.map((row) => ({
+      ...row,
+      isSelected: selectionModel.includes(row.id),
+    }));
+    setGridRows(updatedRows);
     setIsCheckboxSelected(selectionModel.length > 0);
     console.log("選択された行のID:", selectionModel);
   };
@@ -104,6 +110,7 @@ function Administrator() {
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
   const [gridRows, setGridRows] = useState<Row[]>([]);
+  const selectedRows = gridRows.filter((row) => row.isSelected);
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
@@ -266,8 +273,14 @@ function Administrator() {
                     <Typography variant="body1" style={{ margin: 0 }}>
                       削除するイベント：
                     </Typography>
-                    <Chip label="体育祭" variant="outlined" />
-                    <Chip label="文化祭" variant="outlined" />
+                    {selectedRows.map((row) => (
+                      <Chip
+                        key={row.id}
+                        label={row.board_name}
+                        variant="outlined"
+                        color="primary"
+                      />
+                    ))}
                   </Stack>
                   <Box
                     sx={{
