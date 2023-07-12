@@ -19,6 +19,7 @@ import BoardUpdateResult from "./Paticipant/boardUpdateResult";
 import SendDirectmessage from "./Paticipant/sendDirectmessage";
 import SendDirectmessageResult from "./Paticipant/sendDirectmessageResult";
 import NotFound from "./notfound";
+import AdministratorSideBar from "./Administrator/SideBar";
 
 function App() {
   return (
@@ -33,6 +34,10 @@ function App() {
           <Route
             path="/Administrator/Profile"
             element={<AdministratorProfile />}
+          />
+          <Route
+            path="/Administrator/SideBar"
+            element={<AdministratorSideBar />}
           />
           <Route
             path="/Administrator/Profile/Change"
