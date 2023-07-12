@@ -19,6 +19,8 @@ import { GridRowId } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -60,19 +62,25 @@ const style = {
   p: 4,
 };
 
+type Row = {
+  id: string;
+  board_name: string;
+  members: string;
+  board_uuid: string;
+  isSelected: boolean;
+};
+
 const columns: GridColDef[] = [
   { field: "id", headerName: "イベントID", width: 130 },
-  { field: "board_name", headerName: "イベント名", width: 170 },
-  { field: "members", headerName: "人数", type: "number", width: 130 },
-];
-
-const rows = [
-  { id: 1, board_name: "体育祭", members: "1" },
-  { id: 2, board_name: "文化祭", members: "7" },
-  { id: 3, board_name: "修学旅行", members: "3" },
-  { id: 4, board_name: "遠足", members: "31" },
-  { id: 5, board_name: "卒業式", members: "2" },
-  { id: 6, board_name: "入学式", members: "91" },
+  {
+    field: "board_name",
+    headerName: "イベント名",
+    width: 170,
+    renderCell: (params) => (
+      <Link to={`/Administrator/${params.row.board_uuid}`}>{params.value}</Link>
+    ),
+  },
+  { field: "members", headerName: "人数", width: 130 },
 ];
 
 function Administrator() {
@@ -87,12 +95,22 @@ function Administrator() {
   const handleCloseTwo = () => setOpenTwo(false);
 
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+    const updatedRows = gridRows.map((row) => ({
+      ...row,
+      isSelected: selectionModel.includes(row.id),
+    }));
+    setGridRows(updatedRows);
     setIsCheckboxSelected(selectionModel.length > 0);
     console.log("選択された行のID:", selectionModel);
   };
 
+  const endpointUrl =
+    "https://mosa-cup-backend.azurewebsites.net/api/v1/boards";
+
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
+  const [gridRows, setGridRows] = useState<Row[]>([]);
+  const selectedRows = gridRows.filter((row) => row.isSelected);
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
@@ -105,6 +123,35 @@ function Administrator() {
     } else {
       localStorage.removeItem("redirect_path");
     }
+    axios
+      .get(endpointUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const boardData = response.data;
+        console.log(boardData);
+
+        // 取得した情報を代入する配列
+        const rows: Row[] = boardData.map((board: any) => {
+          const { board_id, board_uuid, board_name, members } = board;
+          console.log(members.length + "人");
+          return {
+            id: board_id,
+            board_name,
+            board_uuid,
+            members: members.length + "人",
+          };
+        });
+
+        // rowsをgridRowsに代入する
+        setGridRows(rows);
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("APIリクエストエラー:", error);
+      });
   }, []);
 
   console.log(redirect);
@@ -226,8 +273,14 @@ function Administrator() {
                     <Typography variant="body1" style={{ margin: 0 }}>
                       削除するイベント：
                     </Typography>
-                    <Chip label="体育祭" variant="outlined" />
-                    <Chip label="文化祭" variant="outlined" />
+                    {selectedRows.map((row) => (
+                      <Chip
+                        key={row.id}
+                        label={row.board_name}
+                        variant="outlined"
+                        color="primary"
+                      />
+                    ))}
                   </Stack>
                   <Box
                     sx={{
@@ -255,7 +308,8 @@ function Administrator() {
             }}
           ></Box>
           <DataGrid
-            rows={rows}
+            rows={gridRows}
+            getRowId={(row) => row.id}
             columns={columns}
             initialState={{
               pagination: {
