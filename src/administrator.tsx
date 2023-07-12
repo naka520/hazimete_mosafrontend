@@ -21,6 +21,7 @@ import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Alert from "@mui/material/Alert";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -86,6 +87,11 @@ const columns: GridColDef[] = [
 function Administrator() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
+  const [postSuccessAlert, setPostSuccessAlert] = useState(false);
+  const [NewBoard, setNewBoard] = useState({
+    board_id: "",
+    board_name: "",
+  });
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
 
   const handleOpenOne = () => setOpenOne(true);
@@ -104,13 +110,77 @@ function Administrator() {
     console.log("選択された行のID:", selectionModel);
   };
 
-  const endpointUrl =
+  const getBoardEndpointUrl =
     "https://mosa-cup-backend.azurewebsites.net/api/v1/boards";
+  const postBoardEndpointUrl =
+    "https://mosa-cup-backend.azurewebsites.net/api/v1/board";
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
   const [gridRows, setGridRows] = useState<Row[]>([]);
   const selectedRows = gridRows.filter((row) => row.isSelected);
+
+  const doSomething = () => {
+    const accessToken = localStorage.getItem("access_token");
+    axios
+      .get(getBoardEndpointUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const boardData = response.data;
+        console.log(boardData);
+
+        // 取得した情報を代入する配列
+        const rows: Row[] = boardData.map((board: any) => {
+          const { board_id, board_uuid, board_name, members } = board;
+          return {
+            id: board_id,
+            board_name,
+            board_uuid,
+            members: members.length + "人",
+          };
+        });
+
+        // rowsをgridRowsに代入する
+        setGridRows(rows);
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("APIリクエストエラー:", error);
+      });
+  };
+
+  const handleBoardCreate = () => {
+    const accessToken = localStorage.getItem("access_token");
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        board_id: NewBoard.board_id,
+        board_name: NewBoard.board_name,
+      }),
+    };
+    fetch(postBoardEndpointUrl, requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          setPostSuccessAlert(true);
+          setOpenOne(false);
+          doSomething();
+        } else {
+          // Error
+        }
+      })
+      .catch((error) => {
+        // Handle error
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
@@ -124,7 +194,7 @@ function Administrator() {
       localStorage.removeItem("redirect_path");
     }
     axios
-      .get(endpointUrl, {
+      .get(getBoardEndpointUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -136,7 +206,6 @@ function Administrator() {
         // 取得した情報を代入する配列
         const rows: Row[] = boardData.map((board: any) => {
           const { board_id, board_uuid, board_name, members } = board;
-          console.log(members.length + "人");
           return {
             id: board_id,
             board_name,
@@ -154,7 +223,6 @@ function Administrator() {
       });
   }, []);
 
-  console.log(redirect);
   if (redirect) {
     return <Navigate replace to="/Administrator/Login" />;
   }
@@ -214,14 +282,20 @@ function Administrator() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "3vh",
+                      minHeight: "1vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
                     <TextField
-                      id="outlined-basic"
+                      id="board_name"
                       label="イベント名"
                       variant="outlined"
+                      onChange={(event) =>
+                        setNewBoard((prevBoard) => ({
+                          ...prevBoard,
+                          board_name: event.target.value,
+                        }))
+                      }
                     />
                   </Box>
                   <Box
@@ -229,11 +303,36 @@ function Administrator() {
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: "5vh",
+                      minHeight: "2vh",
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
+                    <TextField
+                      id="board_id"
+                      label="イベントID"
+                      variant="outlined"
+                      onChange={(event) =>
+                        setNewBoard((prevBoard) => ({
+                          ...prevBoard,
+                          board_id: event.target.value,
+                        }))
+                      }
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: "2vh",
+                    }}
+                  ></Box>
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Button
+                      variant="contained"
+                      sx={{ color: "#FFFFFF" }}
+                      onClick={handleBoardCreate}
+                    >
                       イベント登録
                     </Button>
                   </Box>
@@ -320,7 +419,29 @@ function Administrator() {
             checkboxSelection
             onRowSelectionModelChange={handleSelectionModelChange}
           />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "5vh",
+            }}
+          ></Box>
+          {postSuccessAlert && (
+            <Alert severity="success">イベントが作成されました</Alert>
+          )}
         </Container>
+        {/* <footer
+          style={{
+            position: "fixed",
+            bottom: "0",
+            left: "0",
+            right: "0",
+            textAlign: "center",
+          }}
+        >
+          
+        </footer> */}
       </React.Fragment>
     </div>
   );
