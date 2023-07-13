@@ -22,6 +22,9 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Link } from "react-router-dom";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -77,6 +80,11 @@ const rows = [
 ];
 
 function Board() {
+  const [value, setValue] = React.useState("1");
+
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
   const [openThree, setOpenThree] = React.useState(false);
@@ -124,6 +132,19 @@ function Board() {
       <React.Fragment>
         <CssBaseline />
         <Container maxWidth="md">
+          <Box sx={{ width: "100%", typography: "body1" }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  onChange={handleChange}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label="ロール登録" value="1" />
+                  <Tab label="DM" value="2" />
+                </TabList>
+              </Box>
+            </TabContext>
+          </Box>
           <Box
             sx={{
               display: "flex",
