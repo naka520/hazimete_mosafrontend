@@ -25,7 +25,6 @@ import { Link } from "react-router-dom";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 
 declare module "@mui/material/styles" {
   interface Palette {
