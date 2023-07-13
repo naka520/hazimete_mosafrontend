@@ -87,7 +87,10 @@ const columns: GridColDef[] = [
 function Administrator() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
+  const [selectedDeleteRows, setSelectedDeleteRows] = useState<GridRowId[]>([]);
   const [postSuccessAlert, setPostSuccessAlert] = useState(false);
+  const [deleteSuccessAlert, setDeleteSuccessAlert] = useState(false);
+
   const [NewBoard, setNewBoard] = useState({
     board_id: "",
     board_name: "",
@@ -108,6 +111,7 @@ function Administrator() {
     setGridRows(updatedRows);
     setIsCheckboxSelected(selectionModel.length > 0);
     console.log("選択された行のID:", selectionModel);
+    setSelectedDeleteRows(selectionModel);
   };
 
   const getBoardEndpointUrl =
@@ -179,6 +183,42 @@ function Administrator() {
       .catch((error) => {
         // Handle error
         console.log(error);
+      });
+  };
+
+  const handleDelete = () => {
+    const accessToken = localStorage.getItem("access_token");
+    const deleteRequests = selectedDeleteRows.map((rowId) => {
+      const row = gridRows.find((row) => row.id === rowId);
+      console.log(row);
+      if (!row) {
+        console.error("Invalid row:", rowId);
+        return null;
+      }
+      const deleteBoardEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${row.board_uuid}`;
+      const requestOptions = {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          accept: "application/json",
+        },
+      };
+      return fetch(deleteBoardEndpointUrl, requestOptions);
+    });
+
+    Promise.all(deleteRequests)
+      .then((responses) => {
+        const successfulDeletions = responses.filter(
+          (response) => response && response.ok
+        ).length;
+        if (successfulDeletions > 0) {
+          setDeleteSuccessAlert(true);
+          setOpenTwo(false);
+          doSomething();
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting boards:", error);
       });
   };
 
@@ -374,10 +414,9 @@ function Administrator() {
                     </Typography>
                     {selectedRows.map((row) => (
                       <Chip
-                        key={row.id}
+                        key={row.board_uuid}
                         label={row.board_name}
                         variant="outlined"
-                        color="primary"
                       />
                     ))}
                   </Stack>
@@ -390,7 +429,11 @@ function Administrator() {
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
+                    <Button
+                      variant="contained"
+                      sx={{ color: "#FFFFFF" }}
+                      onClick={handleDelete}
+                    >
                       削除
                     </Button>
                   </Box>
@@ -430,18 +473,18 @@ function Administrator() {
           {postSuccessAlert && (
             <Alert severity="success">イベントが作成されました</Alert>
           )}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "1vh",
+            }}
+          ></Box>
+          {deleteSuccessAlert && (
+            <Alert severity="success">イベントが削除されました</Alert>
+          )}
         </Container>
-        {/* <footer
-          style={{
-            position: "fixed",
-            bottom: "0",
-            left: "0",
-            right: "0",
-            textAlign: "center",
-          }}
-        >
-          
-        </footer> */}
       </React.Fragment>
     </div>
   );
