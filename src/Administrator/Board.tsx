@@ -132,19 +132,6 @@ function Board() {
       <React.Fragment>
         <CssBaseline />
         <Container maxWidth="md">
-          <Box sx={{ width: "100%", typography: "body1" }}>
-            <TabContext value={value}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <TabList
-                  onChange={handleChange}
-                  aria-label="lab API tabs example"
-                >
-                  <Tab label="ロール登録" value="1" />
-                  <Tab label="DM" value="2" />
-                </TabList>
-              </Box>
-            </TabContext>
-          </Box>
           <Box
             sx={{
               display: "flex",
@@ -159,6 +146,19 @@ function Board() {
             </Typography>
             <Typography color="text.primary">体育祭</Typography>
           </Breadcrumbs>
+          <Box sx={{ width: "100%", typography: "body1" }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  onChange={handleChange}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label="ロール登録" value="1" />
+                  <Tab label="DM" value="2" />
+                </TabList>
+              </Box>
+            </TabContext>
+          </Box>
           <Box
             sx={{
               display: "flex",
