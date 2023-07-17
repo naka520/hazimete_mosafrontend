@@ -21,6 +21,8 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -67,20 +69,19 @@ const columns: GridColDef[] = [
   { field: "id", headerName: "username", width: 130 },
 ];
 
-const rows = [
-  { display_name: "田中", id: "Ryuki" },
-  { display_name: "田中", id: "tanaka" },
-  { display_name: "田中", id: "Sato" },
-  { display_name: "田中", id: "Hayashi" },
-  { display_name: "田中", id: "Neko" },
-  { display_name: "田中", id: "God" },
-];
+interface Member {
+  user_uuid: string;
+  username: string;
+  display_name: string | null;
+  line_user: any;
+}
 
 function Subboard() {
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
   const [openThree, setOpenThree] = React.useState(false);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
+  const { board_uuid, subboard_uuid } = useParams();
 
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
@@ -98,10 +99,12 @@ function Subboard() {
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
     const accessToken = localStorage.getItem("access_token");
+    const getSubboardEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/subboards/${subboard_uuid}`;
 
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -110,7 +113,26 @@ function Subboard() {
     } else {
       localStorage.removeItem("redirect_path");
     }
-  }, []);
+    axios
+      .get(getSubboardEndpointUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const subboardData = response.data;
+        console.log(subboardData);
+        const updatedRows = subboardData.members.map((member: Member) => ({
+          display_name: member.display_name || "",
+          id: member.username,
+        }));
+        setRows(updatedRows);
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("APIリクエストエラー:", error);
+      });
+  }, [board_uuid, subboard_uuid]);
 
   console.log(redirect);
   if (redirect) {
