@@ -21,6 +21,7 @@ import SendDirectmessageResult from "./Paticipant/sendDirectmessageResult";
 import NotFound from "./notfound";
 import AdministratorSideBar from "./Administrator/SideBar";
 import AdministratorDm from "./Administrator/Dm";
+import AdministratorDmPanel from "./Administrator/DmPanel";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/Administrator/Dm" element={<AdministratorDm />} />
+          <Route path="/Administrator/DmPanel" element={<AdministratorDmPanel />} />
           <Route
             path="/Administrator/Signup"
             element={<AdministratorSignup />}
