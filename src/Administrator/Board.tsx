@@ -160,14 +160,16 @@ function Board() {
             <Typography color="text.primary">体育祭</Typography>
           </Breadcrumbs>
           <Box sx={{ width: "100%", typography: "body1" }}>
+          <ThemeProvider theme={theme}>
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              
                 <TabList
                   onChange={handlePage}
                   aria-label="lab API tabs example"
                 >
-                  <Tab  label="ロール登録" value="1" />
-                  <Tab label="DM" value="2" />
+                  <Tab  label="ロール登録" value="1"  />
+                  <Tab label="DM" value="2"  />
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -179,6 +181,7 @@ function Board() {
            <Navigate to="/Administrator/Dm" />
         </TabPanel>
             </TabContext>
+          </ThemeProvider>
           </Box>
           <Box
             sx={{
