@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
-import { Navigate,Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 interface Message {
@@ -36,10 +36,6 @@ const theme = createTheme({
 const DM: React.FC = () => {
   const [value, setValue] = React.useState("2");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-
-  };
 
   const handlePage=(event: React.SyntheticEvent, pageValue: string)=>{
     setValue(pageValue);
