@@ -84,10 +84,7 @@ const rows = [
 function Board() {
   const [value, setValue] = React.useState("1");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-
-  };
+  
 
   const handlePage=(event: React.SyntheticEvent, pageValue: string)=>{
     setValue(pageValue);
