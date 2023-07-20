@@ -21,10 +21,12 @@ import { GridRowId } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import { Link } from "react-router-dom";
+
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
+import {  Link } from "react-router-dom";
+import { TabPanel } from "@mui/lab";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -82,8 +84,16 @@ const rows = [
 function Board() {
   const [value, setValue] = React.useState("1");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
+  
+
+  const handlePage=(event: React.SyntheticEvent, pageValue: string)=>{
+    setValue(pageValue);
+    handlerolepage(pageValue)
+  };
+    
+  const handlerolepage = (pageValue:any) =>{
+    setValue(pageValue);
+    
   };
   const [openOne, setOpenOne] = React.useState(false);
   const [openTwo, setOpenTwo] = React.useState(false);
@@ -147,17 +157,28 @@ function Board() {
             <Typography color="text.primary">体育祭</Typography>
           </Breadcrumbs>
           <Box sx={{ width: "100%", typography: "body1" }}>
+          <ThemeProvider theme={theme}>
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              
                 <TabList
-                  onChange={handleChange}
+                  onChange={handlePage}
                   aria-label="lab API tabs example"
                 >
-                  <Tab label="ロール登録" value="1" />
-                  <Tab label="DM" value="2" />
+                  <Tab  label="ロール登録" value="1"  />
+                  <Tab label="DM" value="2"  />
                 </TabList>
               </Box>
+              <TabPanel value="1">
+          
+           <Navigate to="/Administrator/Board" />
+        </TabPanel>
+        <TabPanel value="2">
+          
+           <Navigate to="/Administrator/Dm" />
+        </TabPanel>
             </TabContext>
+          </ThemeProvider>
           </Box>
           <Box
             sx={{
