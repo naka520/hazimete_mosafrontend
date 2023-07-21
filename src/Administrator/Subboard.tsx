@@ -81,7 +81,10 @@ function Subboard() {
   const [openTwo, setOpenTwo] = React.useState(false);
   const [openThree, setOpenThree] = React.useState(false);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
+  const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
   const { board_uuid, subboard_uuid } = useParams();
+  const [message, setMessage] = useState("");
+  const [rows, setRows] = useState<Member[]>([]);
 
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
@@ -94,12 +97,59 @@ function Subboard() {
 
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
     setIsCheckboxSelected(selectionModel.length > 0);
+    const selectedUsernames = selectionModel.map((id) => {
+      // 選択された行のIDが数値の場合は文字列に変換する
+      return typeof id === "number" ? id.toString() : id;
+    });
+    setSelectedUsernames(selectedUsernames);
+
     console.log("選択された行のID:", selectionModel);
+  };
+
+  const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(event.target.value);
+  };
+
+  const handleDMSubmit = () => {
+    // ローカルストレージからaccess_tokenを取得する
+    const accessToken = localStorage.getItem("access_token");
+    const sendDMEndpointUrl =
+      "https://mosa-cup-backend.azurewebsites.net/api/v1/direct_message";
+
+    // ユーザ名が入力されていない場合は、何もせずに終了
+    if (!message) {
+      return;
+    }
+
+    // ユーザ名は適宜入力してください。以下はダミーの例です。
+    const usernamesToSend = selectedUsernames;
+
+    // POSTリクエストのボディ
+    const requestBody = {
+      send_to_usernames: usernamesToSend,
+      body: message,
+      scheduled_send_time: new Date().toISOString(), // 現在時刻をISOフォーマットで送信する
+    };
+
+    axios
+      .post(sendDMEndpointUrl, requestBody, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log("DMが送信されました。", response.data);
+        // 送信成功後の処理をここに記述
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("DMの送信に失敗しました。", error);
+      });
   };
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
-  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
@@ -134,7 +184,6 @@ function Subboard() {
       });
   }, [board_uuid, subboard_uuid]);
 
-  console.log(redirect);
   if (redirect) {
     return <Navigate replace to="/Administrator/Login" />;
   }
@@ -280,7 +329,8 @@ function Subboard() {
                       label="メッセージ"
                       multiline
                       rows={3}
-                      defaultValue=""
+                      value={message}
+                      onChange={handleMessageChange}
                       sx={{ width: "70%", height: "100%" }}
                     />
                   </Box>
@@ -293,7 +343,11 @@ function Subboard() {
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
+                    <Button
+                      variant="contained"
+                      sx={{ color: "#FFFFFF" }}
+                      onClick={handleDMSubmit}
+                    >
                       DM送信
                     </Button>
                   </Box>
