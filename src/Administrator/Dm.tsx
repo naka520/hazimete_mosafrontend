@@ -101,25 +101,6 @@ const DM: React.FC = () => {
             </TabContext>
             </ThemeProvider>
           </Box>
-      <Box sx={{ marginTop: 20, marginBottom: 4 }}>
-        <List>
-          {messages.map((message) => (
-            <ListItem key={message.id}>{message.content}</ListItem>
-          ))}
-        </List>
-      </Box>
-      <Box sx={{ display: "flex", gap: 8 }}>
-        <TextField
-          label="メッセージ"
-          variant="outlined"
-          value={inputValue}
-          onChange={handleInputChange}
-          fullWidth
-        />
-        <Button variant="contained" onClick={handleSendMessage}>
-          送信
-        </Button>
-      </Box>
       </Box>
     </Container>
     </div>
