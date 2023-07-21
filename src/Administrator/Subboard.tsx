@@ -23,6 +23,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Alert from "@mui/material/Alert";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -85,6 +86,7 @@ function Subboard() {
   const { board_uuid, subboard_uuid } = useParams();
   const [message, setMessage] = useState("");
   const [rows, setRows] = useState<Member[]>([]);
+  const [postSuccessAlert, setPostSuccessAlert] = useState(false);
 
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
@@ -139,6 +141,7 @@ function Subboard() {
         },
       })
       .then((response) => {
+        setPostSuccessAlert(true);
         console.log("DMが送信されました。", response.data);
         // 送信成功後の処理をここに記述
       })
@@ -428,6 +431,17 @@ function Subboard() {
             checkboxSelection
             onRowSelectionModelChange={handleSelectionModelChange}
           />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "5vh",
+            }}
+          ></Box>
+          {postSuccessAlert && (
+            <Alert severity="success">DMを送信しました</Alert>
+          )}
         </Container>
       </React.Fragment>
     </div>
