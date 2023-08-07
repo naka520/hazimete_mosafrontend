@@ -1,5 +1,12 @@
-import React, { useState } from "react";
+// DmDetail.tsx
+
+import React from "react";
+import { useParams } from "react-router-dom";
+import { Card, CardContent, Typography } from "@mui/material";
+import dmData from "./Dmdata";
+import { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import mockDmList from "./mockData";
 
 import {
   TextField,
@@ -9,12 +16,13 @@ import {
   List,
   ListItem,
   Tab,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
 import { Navigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import mockDmList from "./mockData";
 
 interface Message {
   id: number;
@@ -34,39 +42,24 @@ const theme = createTheme({
   },
 });
 
-const DM: React.FC = () => {
-  const [value, setValue] = React.useState("2");
 
 
-  const handlePage=(event: React.SyntheticEvent, pageValue: string)=>{
-    setValue(pageValue);
-    handlerolepage(pageValue)
-  };
-    
-  const handlerolepage = (pageValue:any) =>{
-    setValue(pageValue);
-    
-  };
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState("");
+const DmPanel: React.FC = () => {
+  const { dmId } = useParams<{ dmId: any }>();
+  const dm = {
+      id: 1,
+      sender: "田中",
+      content: "選手交代のお願い",
+      timestamp: "2023-08-06T12:00:00",
+    };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleSendMessage = () => {
-    if (inputValue.trim() !== "") {
-      const newMessage: Message = {
-        id: messages.length + 1,
-        content: inputValue,
-      };
-      setMessages([...messages, newMessage]);
-      setInputValue("");
-    }
-  };
+  if (!dm) {
+    return <div>DMが見つかりませんでした。</div>;
+  }
 
   return (
-    <div style={{ height: 400, width: "100%" }}>
+    <div>
+      <div style={{ height: 400, width: "100%" }}>
       <Header />
       <SubHeader title="体育祭" />
     <Container maxWidth="sm">
@@ -79,55 +72,25 @@ const DM: React.FC = () => {
             }}
           ></Box>
       <Box sx={{ width: "100%", typography: "body1" }}>
-      <Box sx={{ width: "100%", typography: "body1" }}>
-      <ThemeProvider theme={theme}>
-            <TabContext value={value}>
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <TabList
-                  onChange={handlePage}
-                  aria-label="lab API tabs example"
-                >
-                  <Tab  label="ロール登録" value="1"  />
-                  <Tab label="DM" value="2"  />
-                </TabList>
-              </Box>
-              <TabPanel value="1">
-          
-           <Navigate to="/Administrator/Board" />
-        </TabPanel>
-        <TabPanel value="2">
-          
-           <Navigate to="/Administrator/Dm" />
-        </TabPanel>
-            </TabContext>
-            </ThemeProvider>
-          </Box>
-      <Box sx={{ marginTop: 20, marginBottom: 4 }}>
-        <List>
-          {messages.map((message) => (
-            <ListItem key={message.id}>{message.content}</ListItem>
-          ))}
-        </List>
-      </Box>
-      <Box sx={{ display: "flex", gap: 8 }}>
-        <TextField
-          label="メッセージ"
-          variant="outlined"
-          value={inputValue}
-          onChange={handleInputChange}
-          fullWidth
-        />
-        <Button variant="contained" onClick={handleSendMessage}>
-          送信
-        </Button>
-      </Box>
-
+      <Box sx={{ width: "100%", typography: "body1" }}></Box>
+      <Card>
+        <CardContent>
+          <Typography variant="h6">
+            送信者: {dm.sender}
+          </Typography>
+          <Typography variant="body1">
+            内容: {dm.content}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            タイムスタンプ: {dm.timestamp}
+          </Typography>
+        </CardContent>
+      </Card>
       </Box>
     </Container>
+    </div>
     </div>
   );
 };
 
-export default DM;
-
-//Websocketの実装が必須
+export default DmPanel;

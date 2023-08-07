@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 interface Message {
@@ -106,10 +106,14 @@ const DM: React.FC = () => {
             </ThemeProvider>
           </Box>
           <div>
+      <Typography variant="h4" component="h1" gutterBottom>
+        DMリスト
+      </Typography>
       <List>
         {mockDmList.map((dm) => (
           <React.Fragment key={dm.id}>
-            <ListItem alignItems="flex-start">
+            {/* <ListItem alignItems="flex-start" component={Link} to={`/dm/${dm.id}`}></ListItem> */}
+            <ListItem alignItems="flex-start" component={Link} to={`/Administrator/DmPanel`}>
               <ListItemText
                 primary={dm.sender}
                 secondary={
