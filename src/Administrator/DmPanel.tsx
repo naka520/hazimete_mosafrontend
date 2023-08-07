@@ -18,10 +18,10 @@ import SubHeader from "./../subheader";
 
 
 
-// interface Message {
-//   id: number;
-//   content: string;
-// }
+interface Message {
+  id: number;
+  content: string;
+}
 // const theme = createTheme({
 //   palette: {
 //     primary: {

@@ -1,9 +1,10 @@
-import React from "react";
-// import  useState from "react";
+import React, { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import mockDmList from "./mockData";
-import {
 
+import {
+  TextField,
+  Button,
   Container,
   Box,
   List,
@@ -18,10 +19,10 @@ import SubHeader from "./../subheader";
 import { Link, Navigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-// interface Message {
-//   id: number;
-//   content: string;
-// }
+interface Message {
+  id: number;
+  content: string;
+}
 const theme = createTheme({
   palette: {
     primary: {
@@ -49,23 +50,23 @@ const DM: React.FC = () => {
     setValue(pageValue);
     
   };
-  // const [messages, setMessages] = useState<Message[]>([]);
-  // const [inputValue, setInputValue] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState("");
 
-  // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setInputValue(event.target.value);
-  // };
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
 
-  // const handleSendMessage = () => {
-  //   if (inputValue.trim() !== "") {
-  //     const newMessage: Message = {
-  //       id: messages.length + 1,
-  //       content: inputValue,
-  //     };
-  //     setMessages([...messages, newMessage]);
-  //     setInputValue("");
-  //   }
-  // };
+  const handleSendMessage = () => {
+    if (inputValue.trim() !== "") {
+      const newMessage: Message = {
+        id: messages.length + 1,
+        content: inputValue,
+      };
+      setMessages([...messages, newMessage]);
+      setInputValue("");
+    }
+  };
 
   return (
     <div style={{ height: 400, width: "100%" }}>
@@ -133,25 +134,6 @@ const DM: React.FC = () => {
         ))}
       </List>
     </div>
-      <Box sx={{ marginTop: 20, marginBottom: 4 }}>
-        <List>
-          {messages.map((message) => (
-            <ListItem key={message.id}>{message.content}</ListItem>
-          ))}
-        </List>
-      </Box>
-      <Box sx={{ display: "flex", gap: 8 }}>
-        <TextField
-          label="メッセージ"
-          variant="outlined"
-          value={inputValue}
-          onChange={handleInputChange}
-          fullWidth
-        />
-        <Button variant="contained" onClick={handleSendMessage}>
-          送信
-        </Button>
-      </Box>
       </Box>
     </Container>
     </div>
