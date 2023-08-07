@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import mockDmList from "./mockData";
 
 import {
   TextField,
@@ -101,6 +102,16 @@ const DM: React.FC = () => {
             </TabContext>
             </ThemeProvider>
           </Box>
+          <div>
+      <h1>DMリスト</h1>
+      <ul>
+        {mockDmList.map((dm: { id: React.Key | null | undefined; sender: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; content: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; timestamp: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+          <li key={dm.id}>
+            <strong>{dm.sender}:</strong> {dm.content} ({dm.timestamp})
+          </li>
+        ))}
+      </ul>
+    </div>
       </Box>
     </Container>
     </div>

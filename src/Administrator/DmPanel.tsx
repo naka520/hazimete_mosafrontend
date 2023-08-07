@@ -14,6 +14,7 @@ import Header from "./../header";
 import SubHeader from "./../subheader";
 import { Navigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import mockDmList from "./mockData";
 
 interface Message {
   id: number;
@@ -120,6 +121,7 @@ const DM: React.FC = () => {
           送信
         </Button>
       </Box>
+
       </Box>
     </Container>
     </div>
