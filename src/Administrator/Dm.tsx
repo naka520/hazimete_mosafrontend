@@ -10,6 +10,9 @@ import {
   List,
   ListItem,
   Tab,
+  ListItemText,
+  Typography,
+  Divider,
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
@@ -103,14 +106,29 @@ const DM: React.FC = () => {
             </ThemeProvider>
           </Box>
           <div>
-      <h1>DMリスト</h1>
-      <ul>
-        {mockDmList.map((dm: { id: React.Key | null | undefined; sender: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; content: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; timestamp: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
-          <li key={dm.id}>
-            <strong>{dm.sender}:</strong> {dm.content} ({dm.timestamp})
-          </li>
+      <List>
+        {mockDmList.map((dm) => (
+          <React.Fragment key={dm.id}>
+            <ListItem alignItems="flex-start">
+              <ListItemText
+                primary={dm.sender}
+                secondary={
+                  <React.Fragment>
+                    <Typography component="span" variant="body2" color="text.primary">
+                      {dm.content}
+                    </Typography>
+                    {" — "}
+                    <Typography component="span" variant="body2" color="text.secondary">
+                      {dm.timestamp}
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+            <Divider component="li" />
+          </React.Fragment>
         ))}
-      </ul>
+      </List>
     </div>
       </Box>
     </Container>
