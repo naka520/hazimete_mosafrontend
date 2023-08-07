@@ -1,51 +1,45 @@
 // DmDetail.tsx
 
 import React from "react";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import { Card, CardContent, Typography } from "@mui/material";
-import dmData from "./Dmdata";
-import { useState } from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import mockDmList from "./mockData";
+// import dmData from "./Dmdata";
+// import { useState } from "react";
+// import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+// import mockDmList from "./mockData";
 
 import {
-  TextField,
-  Button,
   Container,
   Box,
-  List,
-  ListItem,
-  Tab,
-  ListItemText,
-  Divider,
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
-import { Navigate } from "react-router-dom";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-interface Message {
-  id: number;
-  content: string;
-}
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#06C756", // プライマリカラーを赤に設定
-    },
-    secondary: {
-      main: "#DDDDDD", // セカンダリカラーを緑に設定
-    },
-    border: {
-      main: "#DDDDDD", // セカンダリカラーを緑に設定
-    },
-  },
-});
+
+
+// interface Message {
+//   id: number;
+//   content: string;
+// }
+// const theme = createTheme({
+//   palette: {
+//     primary: {
+//       main: "#06C756", // プライマリカラーを赤に設定
+//     },
+//     secondary: {
+//       main: "#DDDDDD", // セカンダリカラーを緑に設定
+//     },
+//     border: {
+//       main: "#DDDDDD", // セカンダリカラーを緑に設定
+//     },
+//   },
+// });
 
 
 
 const DmPanel: React.FC = () => {
-  const { dmId } = useParams<{ dmId: any }>();
+  // const { dmId } = useParams<{ dmId: any }>();
   const dm = {
       id: 1,
       sender: "田中",
