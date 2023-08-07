@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import mockDmList from "./mockData";
 
 import {
   TextField,
@@ -9,10 +10,13 @@ import {
   List,
   ListItem,
   Tab,
+  ListItemText,
+  Typography,
+  Divider,
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 interface Message {
@@ -101,25 +105,35 @@ const DM: React.FC = () => {
             </TabContext>
             </ThemeProvider>
           </Box>
-      <Box sx={{ marginTop: 20, marginBottom: 4 }}>
-        <List>
-          {messages.map((message) => (
-            <ListItem key={message.id}>{message.content}</ListItem>
-          ))}
-        </List>
-      </Box>
-      <Box sx={{ display: "flex", gap: 8 }}>
-        <TextField
-          label="メッセージ"
-          variant="outlined"
-          value={inputValue}
-          onChange={handleInputChange}
-          fullWidth
-        />
-        <Button variant="contained" onClick={handleSendMessage}>
-          送信
-        </Button>
-      </Box>
+          <div>
+      <Typography variant="h4" component="h1" gutterBottom>
+        DMリスト
+      </Typography>
+      <List>
+        {mockDmList.map((dm) => (
+          <React.Fragment key={dm.id}>
+            {/* <ListItem alignItems="flex-start" component={Link} to={`/dm/${dm.id}`}></ListItem> */}
+            <ListItem alignItems="flex-start" component={Link} to={`/Administrator/DmPanel`}>
+              <ListItemText
+                primary={dm.sender}
+                secondary={
+                  <React.Fragment>
+                    <Typography component="span" variant="body2" color="text.primary">
+                      {dm.content}
+                    </Typography>
+                    {" — "}
+                    <Typography component="span" variant="body2" color="text.secondary">
+                      {dm.timestamp}
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+            <Divider component="li" />
+          </React.Fragment>
+        ))}
+      </List>
+    </div>
       </Box>
     </Container>
     </div>
