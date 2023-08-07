@@ -30,6 +30,7 @@ function App() {
         <Routes>
           <Route path="/Administrator/Dm" element={<AdministratorDm />} />
           <Route path="/Administrator/DmPanel" element={<AdministratorDmPanel />} />
+
           <Route
             path="/Administrator/Signup"
             element={<AdministratorSignup />}
