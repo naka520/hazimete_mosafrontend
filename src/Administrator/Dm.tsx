@@ -108,14 +108,14 @@ const DM: React.FC = () => {
             </TabContext>
             </ThemeProvider>
           </Box>
-          <div>
+          <Container >
 
       <List color="#FFFFFF">
         {mockDmList.map((dm) => (
           <React.Fragment key={dm.id} >
             {/* <ListItem alignItems="flex-start" component={Link} to={`/dm/${dm.id}`}></ListItem> */}
             <ListItem alignItems="flex-start" component={Link} to={`/Administrator/DmPanel`}
-            sx={{backgroundColor: "#06C756",color:"#FFFFFF"}}>
+            sx={{backgroundColor: "#06C756",color:"#FFFFFF",borderRadius: "10px", marginBottom: "10px"}}>
               <ListItemText
               color="#FFFFFF"
                 primary={dm.sender}
@@ -134,7 +134,7 @@ const DM: React.FC = () => {
           </React.Fragment>
         ))}
       </List>
-    </div>
+    </Container>
       </Box>
     </Container>
     </div>
