@@ -89,12 +89,15 @@ const DM: React.FC = () => {
                 <TabList
                   onChange={handlePage}
                   aria-label="lab API tabs example"
+                  
                 >
                   <Tab  label="ロール登録" value="1"  />
                   <Tab label="DM" value="2"  />
                 </TabList>
               </Box>
-              <TabPanel value="1">
+              <TabPanel value="1"
+                              
+              >
           
            <Navigate to="/Administrator/Board" />
         </TabPanel>
@@ -106,25 +109,23 @@ const DM: React.FC = () => {
             </ThemeProvider>
           </Box>
           <div>
-      <Typography variant="h4" component="h1" gutterBottom>
-        DMリスト
-      </Typography>
-      <List>
+
+      <List color="#FFFFFF">
         {mockDmList.map((dm) => (
-          <React.Fragment key={dm.id}>
+          <React.Fragment key={dm.id} >
             {/* <ListItem alignItems="flex-start" component={Link} to={`/dm/${dm.id}`}></ListItem> */}
-            <ListItem alignItems="flex-start" component={Link} to={`/Administrator/DmPanel`}>
+            <ListItem alignItems="flex-start" component={Link} to={`/Administrator/DmPanel`}
+            sx={{backgroundColor: "#06C756",color:"#FFFFFF"}}>
               <ListItemText
+              color="#FFFFFF"
                 primary={dm.sender}
                 secondary={
-                  <React.Fragment>
-                    <Typography component="span" variant="body2" color="text.primary">
+                  <React.Fragment >
+                    <Typography component="span" variant="body2" color="#FFFFFF">
                       {dm.content}
                     </Typography>
-                    {" — "}
-                    <Typography component="span" variant="body2" color="text.secondary">
-                      {dm.timestamp}
-                    </Typography>
+                    {"  "}
+
                   </React.Fragment>
                 }
               />
