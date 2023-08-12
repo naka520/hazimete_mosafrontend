@@ -5,19 +5,15 @@ import * as React from "react";
 import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import SubHeader from "./../subheader";
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import axios from "axios";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -35,10 +31,10 @@ declare module "@mui/material/styles" {
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#FFFFFF", // プライマリカラーを赤に設定
+      main: "#06C756", // プライマリカラーを赤に設定
     },
     secondary: {
-      main: "#06C756", // セカンダリカラーを緑に設定
+      main: "#FFFFFF", // セカンダリカラーを緑に設定
     },
     border: {
       main: "#DDDDDD", // セカンダリカラーを緑に設定
@@ -47,19 +43,7 @@ const theme = createTheme({
 });
 
 function BoardRegistration() {
-  const [checked, setChecked] = React.useState([0]);
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
+  const { board_uuid } = useParams();
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
@@ -67,6 +51,7 @@ function BoardRegistration() {
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
     const accessToken = localStorage.getItem("access_token");
+    const getSubboardsEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/subboards`;
 
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -75,7 +60,21 @@ function BoardRegistration() {
     } else {
       localStorage.removeItem("redirect_path");
     }
-  }, []);
+    axios
+      .get(getSubboardsEndpointUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const subboardsData = response.data;
+        console.log(subboardsData);
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("APIリクエストエラー:", error);
+      });
+  }, [board_uuid]);
 
   console.log(redirect);
   if (redirect) {
@@ -84,89 +83,67 @@ function BoardRegistration() {
   // ログイン確認処理ここまで
 
   return (
-    <div>
+    <div style={{ height: 400, width: "100%" }}>
       <Header />
-      <SubHeader title="体育祭" />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "60vh",
-        }}
-      >
-        <Container maxWidth="sm">
-          <List
-            sx={{ width: "100%", maxWidth: 900, bgcolor: "background.paper" }}
-          >
-            {[0, 1, 2, 3].map((value) => {
-              const labelId = `checkbox-list-label-${value}`;
-
-              return (
-                <div>
-                  <ListItem
-                    key={value}
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="comments"></IconButton>
-                    }
-                    disablePadding
-                  >
-                    <ListItemButton
-                      role={undefined}
-                      onClick={handleToggle(value)}
-                      dense
-                    >
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ "aria-labelledby": labelId }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        id={labelId}
-                        primary={`Line item ${value + 1}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </div>
-              );
-            })}
-          </List>
-        </Container>
-      </Box>
-
+      <SubHeader title="ロール登録" />
       <React.Fragment>
         <CssBaseline />
-        <Container
-          maxWidth="sm"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "10vh",
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <Stack
-              spacing={2}
-              direction="row"
-              position="static"
+        <ThemeProvider theme={theme}>
+          <Container maxWidth="sm">
+            <Box
               sx={{
-                backgroundColor: theme.palette.primary.main,
-                borderBottom: `2px solid ${theme.palette.border.main}`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "10vh",
+              }}
+            ></Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "10vh",
               }}
             >
-              <Button variant="contained" color="secondary">
-                <Typography color="primary">
-                  <input type="submit" value="ロール登録" />
-                </Typography>
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox defaultChecked />}
+                  label="体育祭"
+                  sx={{
+                    gap: "3vh",
+                  }}
+                />
+                <FormControlLabel
+                  control={<Checkbox defaultChecked />}
+                  label="文化祭"
+                  sx={{
+                    gap: "3vh",
+                  }}
+                />
+                <FormControlLabel
+                  control={<Checkbox defaultChecked />}
+                  label="卒業式"
+                  sx={{
+                    gap: "3vh",
+                  }}
+                />
+              </FormGroup>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "20vh",
+              }}
+            >
+              <Button variant="contained" color="primary">
+                <Typography color="secondary">登録</Typography>
               </Button>
-            </Stack>
-          </ThemeProvider>
-        </Container>
+            </Box>
+          </Container>
+        </ThemeProvider>
       </React.Fragment>
     </div>
   );
