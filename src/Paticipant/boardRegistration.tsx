@@ -42,11 +42,18 @@ const theme = createTheme({
   },
 });
 
+interface Subboard {
+  subboard_uuid: string;
+  subboard_name: string;
+  // 他のプロパティも必要に応じて追加
+}
+
 function BoardRegistration() {
   const { board_uuid } = useParams();
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
+  const [subboardsData, setSubboardsData] = useState<Subboard[]>([]);
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
@@ -67,8 +74,7 @@ function BoardRegistration() {
         },
       })
       .then((response) => {
-        const subboardsData = response.data;
-        console.log(subboardsData);
+        setSubboardsData(response.data);
       })
       .catch((error) => {
         // エラーハンドリング
@@ -107,27 +113,16 @@ function BoardRegistration() {
               }}
             >
               <FormGroup>
-                <FormControlLabel
-                  control={<Checkbox defaultChecked />}
-                  label="体育祭"
-                  sx={{
-                    gap: "3vh",
-                  }}
-                />
-                <FormControlLabel
-                  control={<Checkbox defaultChecked />}
-                  label="文化祭"
-                  sx={{
-                    gap: "3vh",
-                  }}
-                />
-                <FormControlLabel
-                  control={<Checkbox defaultChecked />}
-                  label="卒業式"
-                  sx={{
-                    gap: "3vh",
-                  }}
-                />
+                {subboardsData.map((subboard) => (
+                  <FormControlLabel
+                    key={subboard.subboard_uuid}
+                    control={<Checkbox defaultChecked={false} />} // チェック状態の初期値を適切に設定
+                    label={subboard.subboard_name} // サブボード名を表示
+                    sx={{
+                      gap: "3vh",
+                    }}
+                  />
+                ))}
               </FormGroup>
             </Box>
             <Box
