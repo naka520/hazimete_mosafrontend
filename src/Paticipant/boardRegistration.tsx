@@ -14,6 +14,7 @@ import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { useNavigate } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -45,15 +46,60 @@ const theme = createTheme({
 interface Subboard {
   subboard_uuid: string;
   subboard_name: string;
-  // 他のプロパティも必要に応じて追加
 }
 
 function BoardRegistration() {
   const { board_uuid } = useParams();
+  const navigate = useNavigate();
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
   const [subboardsData, setSubboardsData] = useState<Subboard[]>([]);
+  const [selectedSubboardUUIDs, setSelectedSubboardUUIDs] = useState<string[]>(
+    []
+  );
+
+  const handleSubboardCheckboxChange = (subboard_uuid: string) => {
+    setSelectedSubboardUUIDs((prevSelected) => {
+      if (prevSelected.includes(subboard_uuid)) {
+        return prevSelected.filter((uuid) => uuid !== subboard_uuid);
+      } else {
+        return [...prevSelected, subboard_uuid];
+      }
+    });
+  };
+
+  const handleRegistration = () => {
+    const requestData = {
+      new_my_subboard_uuids: selectedSubboardUUIDs,
+    };
+
+    const accessToken = localStorage.getItem("access_token");
+    const updateMySubboardsEndpointurl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/update_my_subboards`;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    };
+
+    fetch(updateMySubboardsEndpointurl, requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          navigate(`/Paticipant/BoardRegistration/${board_uuid}/result`, {
+            state: { success: true },
+          });
+        } else {
+          // エラーハンドリング
+        }
+      })
+      .catch((error) => {
+        // エラーハンドリング
+      });
+  };
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
@@ -80,9 +126,8 @@ function BoardRegistration() {
         // エラーハンドリング
         console.error("APIリクエストエラー:", error);
       });
-  }, [board_uuid]);
+  }, [board_uuid, selectedSubboardUUIDs]);
 
-  console.log(redirect);
   if (redirect) {
     return <Navigate replace to="/Administrator/Login" />;
   }
@@ -116,8 +161,17 @@ function BoardRegistration() {
                 {subboardsData.map((subboard) => (
                   <FormControlLabel
                     key={subboard.subboard_uuid}
-                    control={<Checkbox defaultChecked={false} />} // チェック状態の初期値を適切に設定
-                    label={subboard.subboard_name} // サブボード名を表示
+                    control={
+                      <Checkbox
+                        checked={selectedSubboardUUIDs.includes(
+                          subboard.subboard_uuid
+                        )}
+                        onChange={() =>
+                          handleSubboardCheckboxChange(subboard.subboard_uuid)
+                        }
+                      />
+                    }
+                    label={subboard.subboard_name}
                     sx={{
                       gap: "3vh",
                     }}
@@ -133,7 +187,11 @@ function BoardRegistration() {
                 minHeight: "20vh",
               }}
             >
-              <Button variant="contained" color="primary">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleRegistration}
+              >
                 <Typography color="secondary">登録</Typography>
               </Button>
             </Box>
