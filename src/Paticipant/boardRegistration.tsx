@@ -129,7 +129,7 @@ function BoardRegistration() {
   }, [board_uuid, selectedSubboardUUIDs]);
 
   if (redirect) {
-    return <Navigate replace to="/Administrator/Login" />;
+    return <Navigate replace to="/Paticipant/Login" />;
   }
   // ログイン確認処理ここまで
 
