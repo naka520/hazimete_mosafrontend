@@ -104,7 +104,7 @@ function BoardRegistration() {
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
     const accessToken = localStorage.getItem("access_token");
-    const getSubboardsEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/subboards`;
+    const getAvailableSubboardsEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/available_subboards`;
 
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -114,7 +114,7 @@ function BoardRegistration() {
       localStorage.removeItem("redirect_path");
     }
     axios
-      .get(getSubboardsEndpointUrl, {
+      .get(getAvailableSubboardsEndpointUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
