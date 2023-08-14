@@ -178,10 +178,13 @@ function BoardRegistration() {
                     key={subboard.subboard_uuid}
                     control={
                       <Checkbox
-                        checked={mySubboardsData.some(
-                          (item) =>
-                            item.subboard_uuid === subboard.subboard_uuid
-                        )}
+                        checked={
+                          mySubboardsData.length > 0 &&
+                          mySubboardsData.some(
+                            (item) =>
+                              item.subboard_uuid === subboard.subboard_uuid
+                          )
+                        }
                         onChange={() =>
                           handleSubboardCheckboxChange(subboard.subboard_uuid)
                         }
