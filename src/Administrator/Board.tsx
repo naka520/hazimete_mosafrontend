@@ -85,7 +85,8 @@ const rows = [
 function Board() {
   const [value, setValue] = React.useState("1");
 
-  
+  const [itemData, setItemData] = useState<any>(null);
+  const [itemId, setItemId] = useState<number | null>(null);
 
   const handlePage=(event: React.SyntheticEvent, pageValue: string)=>{
     setValue(pageValue);
@@ -138,11 +139,12 @@ function Board() {
     try {
       const response = await axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/boards', {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // 認証用に追加
+          Authorization: `Bearer ${accessToken}`, // 認証用に追加(401対策)
         },
       });
       const data = response.data;
       console.log('Fetched Data:', data);
+      setItemId(response.data.board_uuid);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -152,6 +154,28 @@ function Board() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchItemData = async () => {
+      if (itemId !== null) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        };
+
+        try {
+          const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${itemId}`, config);
+          setItemData(response2.data);
+          console.log(response2.data);
+        } catch (error) {
+          console.error("Error fetching item data:", error);
+        }
+      }
+    };
+
+    fetchItemData();
+  }, [itemId, accessToken]);
  
 
   console.log(redirect);
