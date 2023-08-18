@@ -27,6 +27,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import {  Link } from "react-router-dom";
 import { TabPanel } from "@mui/lab";
+import axios from "axios";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -108,6 +109,7 @@ function Board() {
 
   const handleOpenThree = () => setOpenThree(true);
   const handleCloseThree = () => setOpenThree(false);
+  const accessToken = localStorage.getItem("access_token");
 
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
     setIsCheckboxSelected(selectionModel.length > 0);
@@ -117,10 +119,10 @@ function Board() {
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
 
+
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
-    const accessToken = localStorage.getItem("access_token");
-
+    
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
       localStorage.setItem("redirect_path", window.location.pathname);
@@ -130,7 +132,30 @@ function Board() {
     }
   }, []);
 
+
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/boards', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // 認証用に追加
+        },
+      });
+      const data = response.data;
+      console.log('Fetched Data:', data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+ 
+
   console.log(redirect);
+
   if (redirect) {
     return <Navigate replace to="/Administrator/Login" />;
   }
