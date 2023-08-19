@@ -91,7 +91,7 @@ function BoardRegistration() {
     fetch(updateMySubboardsEndpointurl, requestOptions)
       .then((response) => {
         if (response.ok) {
-          navigate(`/Paticipant/BoardRegistration/${board_uuid}/result`, {
+          navigate(`/Paticipant/BoardUpdate/${board_uuid}/result`, {
             state: { success: true },
           });
         } else {
@@ -137,12 +137,13 @@ function BoardRegistration() {
       })
       .then((response) => {
         setmySubboardsData(response.data);
-        setSelectedSubboardUUIDs(
-          response.data.map(
-            (item: { subboard_uuid: string }) => item.subboard_uuid
-          )
-        );
-        console.log(response.data);
+        if (response.data.length > 0) {
+          setSelectedSubboardUUIDs(
+            response.data.map(
+              (item: { subboard_uuid: string }) => item.subboard_uuid
+            )
+          );
+        }
       })
       .catch((error) => {
         // エラーハンドリング
