@@ -55,6 +55,7 @@ function BoardRegistration() {
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
   const [subboardsData, setSubboardsData] = useState<Subboard[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [mySubboardsData, setmySubboardsData] = useState<Subboard[]>([]);
   const [selectedSubboardUUIDs, setSelectedSubboardUUIDs] = useState<string[]>(
     []
@@ -136,12 +137,18 @@ function BoardRegistration() {
       })
       .then((response) => {
         setmySubboardsData(response.data);
+        setSelectedSubboardUUIDs(
+          response.data.map(
+            (item: { subboard_uuid: string }) => item.subboard_uuid
+          )
+        );
+        console.log(response.data);
       })
       .catch((error) => {
         // エラーハンドリング
         console.error("APIリクエストエラー:", error);
       });
-  }, [board_uuid, selectedSubboardUUIDs]);
+  }, [board_uuid]);
 
   if (redirect) {
     return <Navigate replace to="/Paticipant/Login" />;
@@ -178,13 +185,9 @@ function BoardRegistration() {
                     key={subboard.subboard_uuid}
                     control={
                       <Checkbox
-                        checked={
-                          mySubboardsData.length > 0 &&
-                          mySubboardsData.some(
-                            (item) =>
-                              item.subboard_uuid === subboard.subboard_uuid
-                          )
-                        }
+                        checked={selectedSubboardUUIDs.includes(
+                          subboard.subboard_uuid
+                        )}
                         onChange={() =>
                           handleSubboardCheckboxChange(subboard.subboard_uuid)
                         }
