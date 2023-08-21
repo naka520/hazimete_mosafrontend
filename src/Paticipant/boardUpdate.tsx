@@ -1,24 +1,20 @@
 // import { Link } from "react-router-dom";
-
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Header from "./../header";
 import * as React from "react";
 import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import SubHeader from "./../subheader";
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
+import axios from "axios";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import { useNavigate } from "react-router-dom";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -36,10 +32,10 @@ declare module "@mui/material/styles" {
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#FFFFFF", // プライマリカラーを赤に設定
+      main: "#06C756", // プライマリカラーを赤に設定
     },
     secondary: {
-      main: "#06C756", // セカンダリカラーを緑に設定
+      main: "#FFFFFF", // セカンダリカラーを緑に設定
     },
     border: {
       main: "#DDDDDD", // セカンダリカラーを緑に設定
@@ -47,27 +43,71 @@ const theme = createTheme({
   },
 });
 
-function BoardUpdate() {
-  const [checked, setChecked] = React.useState([0]);
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+interface Subboard {
+  subboard_uuid: string;
+  subboard_name: string;
+}
 
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
+function BoardRegistration() {
+  const { board_uuid } = useParams();
+  const navigate = useNavigate();
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
+  const [subboardsData, setSubboardsData] = useState<Subboard[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [mySubboardsData, setmySubboardsData] = useState<Subboard[]>([]);
+  const [selectedSubboardUUIDs, setSelectedSubboardUUIDs] = useState<string[]>(
+    []
+  );
+
+  const handleSubboardCheckboxChange = (subboard_uuid: string) => {
+    setSelectedSubboardUUIDs((prevSelected) => {
+      if (prevSelected.includes(subboard_uuid)) {
+        return prevSelected.filter((uuid) => uuid !== subboard_uuid);
+      } else {
+        return [...prevSelected, subboard_uuid];
+      }
+    });
+  };
+
+  const handleRegistration = () => {
+    const requestData = {
+      new_my_subboard_uuids: selectedSubboardUUIDs,
+    };
+
+    const accessToken = localStorage.getItem("access_token");
+    const updateMySubboardsEndpointurl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/update_my_subboards`;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    };
+
+    fetch(updateMySubboardsEndpointurl, requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          navigate(`/Paticipant/BoardUpdate/${board_uuid}/result`, {
+            state: { success: true },
+          });
+        } else {
+          // エラーハンドリング
+        }
+      })
+      .catch((error) => {
+        // エラーハンドリング
+      });
+  };
 
   useEffect(() => {
     // ローカルストレージからaccess_tokenを取得する
     const accessToken = localStorage.getItem("access_token");
+    const getAvailableSubboardsEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/available_subboards`;
+    const getMySubboardsEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}/my_subboards`;
 
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -76,101 +116,113 @@ function BoardUpdate() {
     } else {
       localStorage.removeItem("redirect_path");
     }
-  }, []);
+    axios
+      .get(getAvailableSubboardsEndpointUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setSubboardsData(response.data);
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("APIリクエストエラー:", error);
+      });
+    axios
+      .get(getMySubboardsEndpointUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setmySubboardsData(response.data);
+        if (response.data.length > 0) {
+          setSelectedSubboardUUIDs(
+            response.data.map(
+              (item: { subboard_uuid: string }) => item.subboard_uuid
+            )
+          );
+        }
+      })
+      .catch((error) => {
+        // エラーハンドリング
+        console.error("APIリクエストエラー:", error);
+      });
+  }, [board_uuid]);
 
-  console.log(redirect);
   if (redirect) {
-    return <Navigate replace to="/Administrator/Login" />;
+    return <Navigate replace to="/Paticipant/Login" />;
   }
   // ログイン確認処理ここまで
 
   return (
-    <div>
+    <div style={{ height: 400, width: "100%" }}>
       <Header />
-      <SubHeader title="体育祭" />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "60vh",
-        }}
-      >
-        <Container maxWidth="sm">
-          <List
-            sx={{ width: "100%", maxWidth: 900, bgcolor: "background.paper" }}
-          >
-            {[0, 1, 2, 3].map((value) => {
-              const labelId = `checkbox-list-label-${value}`;
-
-              return (
-                <div>
-                  <ListItem
-                    key={value}
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="comments"></IconButton>
-                    }
-                    disablePadding
-                  >
-                    <ListItemButton
-                      role={undefined}
-                      onClick={handleToggle(value)}
-                      dense
-                    >
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ "aria-labelledby": labelId }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        id={labelId}
-                        primary={`Line item ${value + 1}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </div>
-              );
-            })}
-          </List>
-        </Container>
-      </Box>
-
+      <SubHeader title="ロール登録" />
       <React.Fragment>
         <CssBaseline />
-        <Container
-          maxWidth="sm"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "10vh",
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <Stack
-              spacing={2}
-              direction="row"
-              position="static"
+        <ThemeProvider theme={theme}>
+          <Container maxWidth="sm">
+            <Box
               sx={{
-                backgroundColor: theme.palette.primary.main,
-                borderBottom: `2px solid ${theme.palette.border.main}`,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "10vh",
+              }}
+            ></Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "10vh",
               }}
             >
-              <Button variant="contained" color="secondary">
-                <Typography color="primary">
-                  <input type="submit" value="ロール更新" />
-                </Typography>
+              <FormGroup>
+                {subboardsData.map((subboard) => (
+                  <FormControlLabel
+                    key={subboard.subboard_uuid}
+                    control={
+                      <Checkbox
+                        checked={selectedSubboardUUIDs.includes(
+                          subboard.subboard_uuid
+                        )}
+                        onChange={() =>
+                          handleSubboardCheckboxChange(subboard.subboard_uuid)
+                        }
+                      />
+                    }
+                    label={subboard.subboard_name}
+                    sx={{
+                      gap: "3vh",
+                    }}
+                  />
+                ))}
+              </FormGroup>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "20vh",
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleRegistration}
+              >
+                <Typography color="secondary">登録</Typography>
               </Button>
-            </Stack>
-          </ThemeProvider>
-        </Container>
+            </Box>
+          </Container>
+        </ThemeProvider>
       </React.Fragment>
     </div>
   );
 }
 
-export default BoardUpdate;
+export default BoardRegistration;

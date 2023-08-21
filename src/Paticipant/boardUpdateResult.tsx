@@ -1,65 +1,14 @@
-// import { Link } from "react-router-dom";
-
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Header from "./../header";
 import * as React from "react";
-import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
 import CssBaseline from "@mui/material/CssBaseline";
 import SubHeader from "./../subheader";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import Typography from "@mui/material/Typography";
 
-declare module "@mui/material/styles" {
-  interface Palette {
-    border: {
-      main: string;
-    };
-  }
-  interface PaletteOptions {
-    border?: {
-      main?: string;
-    };
-  }
-}
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#FFFFFF", // プライマリカラーを赤に設定
-    },
-    secondary: {
-      main: "#06C756", // セカンダリカラーを緑に設定
-    },
-    border: {
-      main: "#DDDDDD", // セカンダリカラーを緑に設定
-    },
-  },
-});
-
-function BoardUpdate() {
-  const [checked, setChecked] = React.useState([0]);
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
-
+function BoardRegistration() {
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
 
@@ -76,104 +25,40 @@ function BoardUpdate() {
     }
   }, []);
 
-  console.log(redirect);
   if (redirect) {
-    return <Navigate replace to="/Administrator/Login" />;
+    return <Navigate replace to="/Paticipant/Login" />;
   }
   // ログイン確認処理ここまで
 
   return (
-    <div>
+    <div style={{ height: 400, width: "100%" }}>
       <Header />
-      <SubHeader title="体育祭" />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "30vh",
-          fontSize: "3rem", // フォントサイズを4remに設定
-        }}
-      >
-        <h1>ロール更新完了</h1>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "1vh",
-        }}
-      >
-        <Container maxWidth="sm">
-          <List
-            sx={{ width: "100%", maxWidth: 900, bgcolor: "background.paper" }}
-          >
-            {[0, 1, 2, 3].map((value) => {
-              const labelId = `checkbox-list-label-${value}`;
-
-              return (
-                <div>
-                  <ListItem
-                    key={value}
-                    secondaryAction={
-                      <IconButton edge="end" aria-label="comments"></IconButton>
-                    }
-                    disablePadding
-                  >
-                    <ListItemButton
-                      role={undefined}
-                      onClick={handleToggle(value)}
-                      dense
-                    >
-                      <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple
-                          inputProps={{ "aria-labelledby": labelId }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        id={labelId}
-                        primary={`Line item ${value + 1}`}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                </div>
-              );
-            })}
-          </List>
-        </Container>
-      </Box>
-
+      <SubHeader title="ロール修正" />
       <React.Fragment>
         <CssBaseline />
-        <Container
-          maxWidth="sm"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "10vh",
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <Stack
-              spacing={2}
-              direction="row"
-              position="static"
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                borderBottom: `2px solid ${theme.palette.border.main}`,
-              }}
-            ></Stack>
-          </ThemeProvider>
+        <Container maxWidth="sm">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "10vh",
+            }}
+          ></Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "10vh",
+            }}
+          >
+            <Typography variant="h4">ロール修正完了</Typography>
+          </Box>
         </Container>
       </React.Fragment>
     </div>
   );
 }
 
-export default BoardUpdate;
+export default BoardRegistration;
