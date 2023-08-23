@@ -21,13 +21,14 @@ import { GridRowId } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-
+import { useLocation } from 'react-router-dom';
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import {  Link } from "react-router-dom";
 import { TabPanel } from "@mui/lab";
 import axios from "axios";
+import { useBoardContext } from "../BoardContext";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -83,7 +84,10 @@ const rows = [
 ];
 
 function Board() {
+
   const [value, setValue] = React.useState("1");
+  const [rows, setRows] = useState([]); 
+  const [mem, setMem] = useState([]); 
 
   const [itemData, setItemData] = useState<any>(null);
   const [itemId, setItemId] = useState<number | null>(null);
@@ -110,8 +114,7 @@ function Board() {
 
   const handleOpenThree = () => setOpenThree(true);
   const handleCloseThree = () => setOpenThree(false);
-  const accessToken = localStorage.getItem("access_token");
-
+  
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
     setIsCheckboxSelected(selectionModel.length > 0);
     console.log("選択された行のID:", selectionModel);
@@ -119,10 +122,38 @@ function Board() {
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
+  const [boardUuid, setBoardUuid] = useState(""); 
+  
+  const fetchItemData = async (access_token:string, board_uuid:string) => {
+    if (board_uuid !== null) {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      };
 
+      try {
+        const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}`, config);
+        setItemData(response2.data);
+        console.log("response2");
+        console.log(response2.data);
+      } catch (error) {
+        console.error("Error fetching item data:", error);
+      }
+    }
+  };
 
   useEffect(() => {
+    // ローカルストレージからBoard_idを取得する
+    const board_uuid = localStorage.getItem("boardUuid") as string
+    setBoardUuid(board_uuid);
+
     // ローカルストレージからaccess_tokenを取得する
+    const accessToken = localStorage.getItem("access_token") as string;
+
+    // APIを叩く
+    fetchData(accessToken);
+    fetchItemData(accessToken, board_uuid);
     
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -135,11 +166,11 @@ function Board() {
 
 
 
-  const fetchData = async () => {
+  const fetchData = async (access_token:string) => {
     try {
       const response = await axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/boards', {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // 認証用に追加(401対策)
+          Authorization: `Bearer ${access_token}`, // 認証用に追加(401対策)
         },
       });
       const data = response.data;
@@ -151,31 +182,31 @@ function Board() {
     
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
-  useEffect(() => {
-    const fetchItemData = async () => {
-      if (itemId !== null) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        };
+  // useEffect(() => {
+  //   const fetchItemData = async () => {
+  //     if (itemId !== null) {
+  //       const config = {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       };
 
-        try {
-          const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${itemId}`, config);
-          setItemData(response2.data);
-          console.log(response2.data);
-        } catch (error) {
-          console.error("Error fetching item data:", error);
-        }
-      }
-    };
+  //       try {
+  //         const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${itemId}`, config);
+  //         setItemData(response2.data);
+  //         console.log(response2.data);
+  //       } catch (error) {
+  //         console.error("Error fetching item data:", error);
+  //       }
+  //     }
+  //   };
 
-    fetchItemData();
-  }, [itemId, accessToken]);
+  //   fetchItemData();
+  // }, [itemId, accessToken]);
  
 
   console.log(redirect);
@@ -188,7 +219,9 @@ function Board() {
     <div style={{ height: 400, width: "100%" }}>
       <Header />
       <SubHeader title="体育祭" />
+      
       <React.Fragment>
+        <Box>{boardUuid}</Box>
         <CssBaseline />
         <Container maxWidth="md">
           <Box
@@ -201,6 +234,7 @@ function Board() {
           ></Box>
           <Breadcrumbs aria-label="breadcrumb">
             <Typography color="text.primary">
+              
               <Link to="/Administrator">イベント</Link>
             </Typography>
             <Typography color="text.primary">体育祭</Typography>
