@@ -43,6 +43,17 @@ declare module "@mui/material/styles" {
   }
 }
 
+interface Subboard {
+  subboard_uuid: string;
+  subboard_name: string;
+  memberCount: number;
+}
+interface RowType {
+  id:string;
+  subboards: Subboard[];
+}
+
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -86,7 +97,7 @@ const rows = [
 function Board() {
 
   const [value, setValue] = React.useState("1");
-  const [rows, setRows] = useState([]); 
+  // const [rows, setRows] = useState([]); 
   const [mem, setMem] = useState([]); 
 
   const [itemData, setItemData] = useState<any>(null);
@@ -123,6 +134,8 @@ function Board() {
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
   const [boardUuid, setBoardUuid] = useState(""); 
+  const [rows, setRows] = useState<RowType[]>([]);
+  let accessToken:string = "";
   
   const fetchItemData = async (access_token:string, board_uuid:string) => {
     if (board_uuid !== null) {
@@ -134,9 +147,9 @@ function Board() {
 
       try {
         const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}`, config);
-        setItemData(response2.data);
+        setItemData(response2.data.subboards);
         console.log("response2");
-        console.log(response2.data);
+        console.log(response2.data.subboards);
       } catch (error) {
         console.error("Error fetching item data:", error);
       }
@@ -149,11 +162,12 @@ function Board() {
     setBoardUuid(board_uuid);
 
     // ローカルストレージからaccess_tokenを取得する
-    const accessToken = localStorage.getItem("access_token") as string;
+    accessToken = localStorage.getItem("access_token") as string;
 
     // APIを叩く
     fetchData(accessToken);
     fetchItemData(accessToken, board_uuid);
+    fetchData2(accessToken, board_uuid,setRows);
     
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -162,7 +176,12 @@ function Board() {
     } else {
       localStorage.removeItem("redirect_path");
     }
-  }, []);
+
+
+
+
+
+  }, [accessToken,boardUuid]);
 
 
 
@@ -181,6 +200,40 @@ function Board() {
     }
     
   };
+
+  const fetchData2 = async (access_token: string, boardUuid: string, setRows: React.Dispatch<React.SetStateAction<RowType[]>>) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    };
+  
+    try {
+      const response = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}`, config);
+      console.log("API Response:", response.data); // APIのレスポンスを確認
+  
+      if (Array.isArray(response.data)) { // データ形式の確認
+        const formattedRows = response.data.map((row: any) => {
+          const memberCount = row.subboards.reduce((acc: number, subboard: any) => acc + subboard.members.length, 0);
+          return {
+            id: row.id,
+            subboards: row.subboards.map((subboard: any) => ({
+              subboard_uuid: subboard.subboard_uuid,
+              subboard_name: subboard.subboard_name,
+              memberCount,
+            })),
+          };
+        });
+        setRows(formattedRows);
+        console.log(formattedRows);
+      } else {
+        console.warn("API response is not an array.");
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  
 
   // useEffect(() => {
   //   fetchData();
