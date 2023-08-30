@@ -29,6 +29,8 @@ import {  Link } from "react-router-dom";
 import { TabPanel } from "@mui/lab";
 import axios from "axios";
 import { useBoardContext } from "../BoardContext";
+import internal from "stream";
+import { CardMembership } from "@mui/icons-material";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -52,12 +54,14 @@ type UserType = {
 };
 
 type SubboardType = {
-  subboard_uuid: string;
+  id: string;
   subboard_name: string;
-  members: UserType[];
+  // members: UserType[];
+  members_count: string;
 };
 
 type RowType = {
+  membercount: string;
   id: string;
   subboards: SubboardType[];
 };
@@ -88,18 +92,28 @@ const style = {
   p: 4,
 };
 
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ロール名", width: 170 },
-  { field: "members", headerName: "人数", width: 130 },
+// const columns: GridColDef[] = [
+//   { field: "subboard", headerName: "ロール名", width: 170 },
+//   { field: "membercount", headerName: "人数", width: 130 },
+// ];
+
+const columns = [
+  { field: 'id', headerName: 'ID', width: 90 },
+  { field: 'subboard_name', headerName: 'ロール名', width: 200 }, // 追加
+  { field: 'members_count', headerName: '人数', type: 'number', width: 130 },
 ];
 
-const rows = [
-  { id: "体育祭", members: "4" },
-  { id: "文化祭", members: "2" },
-  { id: "入学式", members: "7" },
-  { id: "卒業式", members: "29" },
-  { id: "飲み会", members: "2" },
-];
+// type RowType = {
+//   membercount: string;
+//   id: string;
+//   subboards: SubboardType[];
+// const rows = [
+//   { id: "体育祭", members: "4" },
+//   { id: "文化祭", members: "2" },
+//   { id: "入学式", members: "7" },
+//   { id: "卒業式", members: "29" },
+//   { id: "飲み会", members: "2" },
+// ];
 
 function Board() {
 
@@ -127,7 +141,8 @@ function Board() {
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
 
-  const handleOpenTwo = () => setOpenTwo(true);
+  // const handleOpenTwo = () => setOpenTwo(true);
+    const handleOpenTwo = () => setOpenTwo(true);
   const handleCloseTwo = () => setOpenTwo(false);
 
   const handleOpenThree = () => setOpenThree(true);
@@ -141,7 +156,7 @@ function Board() {
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
   const [boardUuid, setBoardUuid] = useState(""); 
-  const [rows, setRows] = useState<RowType[]>([]);
+  const [rows, setRows] = useState<SubboardType[]>([]);
   let accessToken:string = "";
   
   const fetchItemData = async (access_token:string, board_uuid:string) => {
@@ -162,6 +177,16 @@ function Board() {
       }
     }
   };
+
+  const [subboardname, setsubboardname] = useState({
+
+    subboard_name: "",
+  });
+
+  const [postSuccessAlert, setPostSuccessAlert] = useState(false);
+const [postErrorAlert, setPostErrorAlert] = useState(false);
+
+
 
   useEffect(() => {
     // ローカルストレージからBoard_idを取得する
@@ -190,7 +215,43 @@ function Board() {
 
   }, [accessToken,boardUuid]);
 
-
+  const createsubboards = () =>{
+    console.log("ok");
+     const accessToken = localStorage.getItem("access_token");
+     const boardUuid = localStorage.getItem("boardUuid"); // 必要な board_uuid を指定してください
+     
+     console.log(accessToken);
+     console.log(boardUuid);
+     const requestOptions = {
+       method: "POST",
+       headers: {
+         Authorization: `Bearer ${accessToken}`,
+         "Content-Type": "application/json",
+         accept: "application/json",
+       },
+       body: JSON.stringify({
+         subboard_name: subboardname.subboard_name  // NewRole は新しいロールのデータを保持する状態変数と仮定
+         // 他の必要なフィールドもこちらに
+       }),
+     };
+   
+     fetch(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}/subboard`, requestOptions)
+       .then((response) => {
+         if (response.ok) {
+           setPostSuccessAlert(true); // 成功アラートを表示
+           setOpenOne(false);  // モーダルを閉じる
+             // 他の処理を行う
+         } else {
+           // エラーハンドリング
+           setPostErrorAlert(true); // 失敗アラートを表示
+         }
+       })
+       .catch((error) => {
+         // ネットワークエラーなどのハンドリング
+         console.log(error);
+         setPostErrorAlert(true); // 失敗アラートを表示
+       });
+   }
 
   const fetchData = async (access_token:string) => {
     try {
@@ -220,16 +281,17 @@ function Board() {
       const apiResponse: { subboards: SubboardType[] } = response.data.subboards;
   
       if (apiResponse && Array.isArray(apiResponse)) {
-        const formattedRows: RowType[] = apiResponse.map((subboard) => {
-          const memberCount = subboard.members.length;
+        const formattedRows: SubboardType[] = apiResponse.map((subboard) => {
           return {
             id: subboard.subboard_uuid,
-            subboards: [{
-              subboard_uuid: subboard.subboard_uuid,
-              subboard_name: subboard.subboard_name,
-              members: subboard.members || []
-            }],
-            memberCount
+            // subboards: [{
+            //   subboard_uuid: subboard.subboard_uuid,
+            //   subboard_name: subboard.subboard_name,
+            //   members: subboard.members || []
+            // }],
+            subboard_name: subboard.subboard_name,
+            // members:subboard.members || [],
+            members_count: subboard.members.length
           };
         });
         setRows(formattedRows);
@@ -275,6 +337,7 @@ function Board() {
   if (redirect) {
     return <Navigate replace to="/Administrator/Login" />;
   }
+
   // ログイン確認処理ここまで
   return (
     <div style={{ height: 400, width: "100%" }}>
@@ -315,7 +378,7 @@ function Board() {
               </Box>
               <TabPanel value="1">
           
-           <Navigate to="/Administrator/Board" />
+           {/* <Navigate to="/Administrator/{$boardUuid}" /> */}
         </TabPanel>
         <TabPanel value="2">
           
@@ -368,6 +431,12 @@ function Board() {
                       id="outlined-basic"
                       label="ロール名"
                       variant="outlined"
+                      onChange={(event) =>
+                        setsubboardname((prevBoard) => ({
+                          ...prevBoard,
+                          board_name: event.target.value, // 入力された値で board_name を更新
+                        }))
+                      }
                     />
                   </Box>
                   <Box
@@ -379,8 +448,8 @@ function Board() {
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
-                      ロール作成
+                    <Button variant="contained" sx={{ color: "#FFFFFF" }} onClick={createsubboards} >
+                      ロール登録
                     </Button>
                   </Box>
                 </Box>
