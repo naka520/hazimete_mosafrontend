@@ -43,17 +43,24 @@ declare module "@mui/material/styles" {
   }
 }
 
-interface Subboard {
+type UserType = {
+  user_uuid: string;
+  user_id: string;
+  username: string;
+  display_name: string;
+  line_user: null | any;
+};
+
+type SubboardType = {
   subboard_uuid: string;
   subboard_name: string;
-  memberCount: number;
-}
-interface RowType {
-  id:string;
-  subboards: Subboard[];
-}
+  members: UserType[];
+};
 
-
+type RowType = {
+  id: string;
+  subboards: SubboardType[];
+};
 const theme = createTheme({
   palette: {
     primary: {
@@ -166,8 +173,8 @@ function Board() {
 
     // APIを叩く
     fetchData(accessToken);
-    fetchItemData(accessToken, board_uuid);
-    fetchData2(accessToken, board_uuid,setRows);
+    // fetchItemData(accessToken, board_uuid);
+    fetchData2(accessToken, board_uuid);
     
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
@@ -201,33 +208,34 @@ function Board() {
     
   };
 
-  const fetchData2 = async (access_token: string, boardUuid: string, setRows: React.Dispatch<React.SetStateAction<RowType[]>>) => {
+  const fetchData2 = async (access_token: string, board_uuid: string) => {
     const config = {
       headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
+        Authorization: `Bearer ${access_token}`
+      }
     };
   
     try {
-      const response = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}`, config);
-      console.log("API Response:", response.data); // APIのレスポンスを確認
+      const response = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}`, config);
+      const apiResponse: { subboards: SubboardType[] } = response.data.subboards;
   
-      if (Array.isArray(response.data)) { // データ形式の確認
-        const formattedRows = response.data.map((row: any) => {
-          const memberCount = row.subboards.reduce((acc: number, subboard: any) => acc + subboard.members.length, 0);
+      if (apiResponse && Array.isArray(apiResponse)) {
+        const formattedRows: RowType[] = apiResponse.map((subboard) => {
+          const memberCount = subboard.members.length;
           return {
-            id: row.id,
-            subboards: row.subboards.map((subboard: any) => ({
+            id: subboard.subboard_uuid,
+            subboards: [{
               subboard_uuid: subboard.subboard_uuid,
               subboard_name: subboard.subboard_name,
-              memberCount,
-            })),
+              members: subboard.members || []
+            }],
+            memberCount
           };
         });
         setRows(formattedRows);
         console.log(formattedRows);
       } else {
-        console.warn("API response is not an array.");
+        console.warn("API response is not in the expected format.");
       }
     } catch (error) {
       console.error('Error fetching data:', error);
