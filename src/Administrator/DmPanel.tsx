@@ -99,6 +99,8 @@ import {
   Box,
   List,
   ListItem,
+  TextField,
+  Button,
 } from "@mui/material";
 import Header from "./../header";
 import SubHeader from "./../subheader";
@@ -185,6 +187,32 @@ const DmPanel: React.FC = () => {
               </ListItem>
             ))}
           </List>
+          <Container maxWidth="sm">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 2,
+          }}
+        >
+          <TextField
+            variant="outlined"
+            fullWidth
+            // value={inputValue}
+            // onChange={handleInputChange}
+            placeholder="メッセージを入力"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            // onClick={handleSendMessage}
+            sx={{ marginLeft: 1 }}
+          >
+            送信
+          </Button>
+        </Box>
+      </Container>
           </ThemeProvider>
         </Box>
       </Container>
