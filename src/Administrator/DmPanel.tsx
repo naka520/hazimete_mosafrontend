@@ -225,3 +225,133 @@ export default DmPanel;
 
 
 
+// import React, { useEffect, useState } from "react";
+// import axios from 'axios';
+// import {
+//   Card,
+//   CardContent,
+//   Typography,
+//   Container,
+//   Box,
+//   List,
+//   ListItem,
+//   TextField,
+//   Button
+// } from "@mui/material";
+
+// interface DmData {
+//   direct_message_uuid: string;
+//   send_from: {
+//     display_name: string;
+//   };
+//   send_to: {
+//     display_name: string;
+//   };
+//   body: string;
+//   scheduled_send_time: string;
+// }
+
+// const DmPanel: React.FC = () => {
+//   const [dmList, setDmList] = useState<DmData[]>([]);
+//   const [inputValue, setInputValue] = useState("");
+
+//   useEffect(() => {
+//     const storedUuid = localStorage.getItem('direct_message_uuid');
+//     const accessToken = localStorage.getItem('access_token');
+    
+//   axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/direct_messages', {
+//     headers: {
+//       'Authorization': `Bearer ${accessToken}` // Bearer 認証を使用する場合
+//     }
+//   })
+//       .then(response => {
+//         const filteredData = response.data.filter((dm: DmData) => dm.direct_message_uuid === storedUuid);
+//         setDmList(filteredData);
+//       })
+//       .catch(error => {
+//         console.error('Error fetching data: ', error);
+//       });
+//   }, []);
+
+//   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setInputValue(event.target.value);
+//   };
+
+//   const handleSendMessage = () => {
+//     if (inputValue.trim() !== "") {
+//       // ここで新しいメッセージを送信するAPIを呼び出すなどの処理を行います。
+//       setInputValue("");
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <Container maxWidth="sm">
+//         <List>
+//           {dmList.map((dm) => (
+//             <ListItem
+//               key={dm.direct_message_uuid}
+//               sx={{
+//                 alignSelf: dm.send_from.display_name === "田中" ? "flex-start" : "flex-end",
+//                 marginBottom: 2,
+//               }}
+//             >
+//               <Card
+//                 sx={{
+//                   backgroundColor: dm.send_from.display_name === "田中" ? "#DDDDDD" : "#06C756",
+//                   color: dm.send_from.display_name === "田中" ? "#000000" : "#FFFFFF",
+//                   width: "fit-content",
+//                   boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+//                   borderRadius: "12px",
+//                   padding: 1,
+//                 }}
+//               >
+//                 <CardContent>
+//                   <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
+//                   {`${dm.send_from.display_name} -> ${dm.send_to.display_name}`}
+//                   </Typography>
+//                   <Typography variant="body1">
+//                     {dm.body}
+//                   </Typography>
+//                   <Typography
+//                     variant="caption"
+//                     color="textSecondary"
+//                     sx={{ alignSelf: "flex-end", marginTop: 1 }}
+//                   >
+//                     {dm.scheduled_send_time}
+//                   </Typography>
+//                 </CardContent>
+//               </Card>
+//             </ListItem>
+//           ))}
+//         </List>
+//         <Box
+//           sx={{
+//             display: "flex",
+//             flexDirection: "row",
+//             alignItems: "center",
+//             padding: 2,
+//           }}
+//         >
+//           <TextField
+//             variant="outlined"
+//             fullWidth
+//             value={inputValue}
+//             onChange={handleInputChange}
+//             placeholder="メッセージを入力"
+//           />
+//           <Button
+//             variant="contained"
+//             color="primary"
+//             onClick={handleSendMessage}
+//             sx={{ marginLeft: 1 }}
+//           >
+//             送信
+//           </Button>
+//         </Box>
+//       </Container>
+//     </div>
+//   );
+// };
+
+// export default DmPanel;
