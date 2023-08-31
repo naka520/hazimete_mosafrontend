@@ -27,7 +27,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import {  Link } from "react-router-dom";
 import { TabPanel } from "@mui/lab";
-import axios from "axios";
+import axios, { Axios } from "axios";
 import { useBoardContext } from "../BoardContext";
 import internal from "stream";
 import { CardMembership } from "@mui/icons-material";
@@ -163,7 +163,7 @@ function Board() {
     if (board_uuid !== null) {
       const config = {
         headers: {
-          Authorization: `Bearer ${access_token}`
+          Authorization: `Bearer ${access_token}`//Stateで管理しているのはaccessTokenなのに注意
         }
       };
 
@@ -178,10 +178,7 @@ function Board() {
     }
   };
 
-  const [subboardname, setsubboardname] = useState({
-
-    subboard_name: "",
-  });
+  const [subboardname, setsubboardname] = useState("");
 
   const [postSuccessAlert, setPostSuccessAlert] = useState(false);
 const [postErrorAlert, setPostErrorAlert] = useState(false);
@@ -217,41 +214,66 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
 
   const createsubboards = () =>{
     console.log("ok");
-     const accessToken = localStorage.getItem("access_token");
-     const boardUuid = localStorage.getItem("boardUuid"); // 必要な board_uuid を指定してください
-     
-     console.log(accessToken);
-     console.log(boardUuid);
-     const requestOptions = {
-       method: "POST",
-       headers: {
-         Authorization: `Bearer ${accessToken}`,
-         "Content-Type": "application/json",
-         accept: "application/json",
-       },
-       body: JSON.stringify({
-         subboard_name: subboardname.subboard_name  // NewRole は新しいロールのデータを保持する状態変数と仮定
+    const accessToken = localStorage.getItem("access_token");
+    const boardUuid = localStorage.getItem("boardUuid"); // 必要な board_uuid を指定してください
+    
+    console.log(accessToken);
+    console.log(boardUuid);
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+         subboard_name: subboardname  // NewRole は新しいロールのデータを保持する状態変数と仮定
          // 他の必要なフィールドもこちらに
-       }),
-     };
-   
-     fetch(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}/subboard`, requestOptions)
-       .then((response) => {
-         if (response.ok) {
-           setPostSuccessAlert(true); // 成功アラートを表示
-           setOpenOne(false);  // モーダルを閉じる
-             // 他の処理を行う
-         } else {
-           // エラーハンドリング
-           setPostErrorAlert(true); // 失敗アラートを表示
-         }
-       })
-       .catch((error) => {
-         // ネットワークエラーなどのハンドリング
-         console.log(error);
-         setPostErrorAlert(true); // 失敗アラートを表示
-       });
-   }
+      }),
+    };
+    
+    let nextUrl = null;
+    fetch(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}/subboard`, requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          window.location.reload()
+          return response.json(); // レスポンスをJSONとしてパース
+        } else {
+          // エラーハンドリング
+          setPostErrorAlert(true); // 失敗アラートを表示
+          throw new Error("Failed to fetch");
+        }
+      })
+      // .then(async (data) => {
+      //   // パースしたJSONデータを使った処理
+      //   setPostSuccessAlert(true); // 成功アラートを表示
+      //   setOpenOne(false);  // モーダルを閉じる
+
+      //   nextUrl = data.Location; // 例：dataオブジェクト内にnextUrlというキーがあると仮定
+      //   const config = {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`
+      //     }
+      //   }
+      //   await axios.get(nextUrl, config)
+      //     .then(response => {
+      //         const newRow : SubboardType = {
+      //           id: response.data.subboard_uuid,
+      //           subboard_name: response.data.subboard_name,
+      //           members_count: response.data.members.length
+      //         }
+      //         setRows((prevRows) => [...prevRows, newRow]);
+      //       }
+      //     )
+      //     .catch(err => console.log(err))
+        
+      // })
+      .catch((error) => {
+        // ネットワークエラーなどのハンドリング
+        console.log(error);
+        setPostErrorAlert(true); // 失敗アラートを表示
+      });
+  }
 
   const fetchData = async (access_token:string) => {
     try {
@@ -330,7 +352,6 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
 
   //   fetchItemData();
   // }, [itemId, accessToken]);
- 
 
   console.log(redirect);
 
@@ -427,7 +448,7 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <TextField
+                    {/* <TextField
                       id="outlined-basic"
                       label="ロール名"
                       variant="outlined"
@@ -437,7 +458,18 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
                           board_name: event.target.value, // 入力された値で board_name を更新
                         }))
                       }
-                    />
+                    /> */}
+                    <TextField
+                    id="outlined-basic"
+                    label="ロール名"
+                    value={subboardname}
+                    placeholder="ロール名"
+                    contentEditable="true"
+                    variant="outlined"
+                    onChange={e => {
+                        setsubboardname(e.target.value)
+                    }}
+                ></TextField>
                   </Box>
                   <Box
                     sx={{
