@@ -99,7 +99,7 @@ const style = {
 // ];
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
+  // { field: 'id', headerName: 'ID', width: 90 },
   { field: 'subboard_name', headerName: 'ロール名', width: 200 }, // 追加
   { field: 'members_count', headerName: '人数', type: 'number', width: 130 },
 ];
@@ -421,7 +421,7 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
       <SubHeader title="体育祭" />
       
       <React.Fragment>
-        <Box>{boardUuid}</Box>
+        {/* <Box>{boardUuid}</Box> */}
         <CssBaseline />
         <Container maxWidth="md">
           <Box
