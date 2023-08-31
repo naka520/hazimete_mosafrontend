@@ -239,6 +239,8 @@ const DM: React.FC = () => {
  // ... 他のインポート ...
   const handleDmClick = (directMessageUuid: string) => {
   console.log(`Clicked DM with direct_message_uuid: ${directMessageUuid}`);
+  const message = directMessageUuid;
+  localStorage.setItem("direct_message_uuid", message);
   // ここにクリック時の追加処理を書くことも可能
 };
 
