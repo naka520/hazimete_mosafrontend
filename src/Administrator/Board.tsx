@@ -152,11 +152,20 @@ function Board() {
 
   
   const [selectedRows, setSelectedRows] = useState<SubboardType[]>([]);
+  const[subboardUuid,setsubboardUuid]=useState<string>("");
+  const setstoragesubUuid = (subboardUuid: string) => {
+    localStorage.setItem('subboardUuid', subboardUuid);
+  };
   
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
 
     setSelectedRows(rows.filter((row) => selectionModel.includes(row.id)));
     setIsCheckboxSelected(selectionModel.length > 0);
+    // if (selectionModel.length > 0) {
+    //   setsubboardUuid(String(selectionModel[0]));
+    //   setstoragesubUuid(subboardUuid);
+    //   console.log(subboardUuid);
+    // }
     console.log("選択された行のID:", selectionModel);
 
   };
@@ -360,6 +369,44 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
 
   //   fetchItemData();
   // }, [itemId, accessToken]);
+
+  const handleDelete = () => {
+    const accessToken = localStorage.getItem("access_token");
+    // const getsubUuid = localStorage.getItem("subboardUuid") as string
+    // console.log(getsubUuid);
+    const deleteRequests = selectedRows.map((rowId) => {
+      const row = selectedRows.find((row) => row.id ===  (rowId as any).id);
+      console.log(row);
+      if (!row) {
+        console.error("Invalid row:", rowId);
+        return null;
+      }
+      const deleteBoardEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}/subboard/${subboardUuid}`;
+      const requestOptions = {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          accept: "application/json",
+        },
+      };
+      return fetch(deleteBoardEndpointUrl, requestOptions);
+    });
+
+    Promise.all(deleteRequests)
+      .then((responses) => {
+        const successfulDeletions = responses.filter(
+          (response) => response && response.ok
+        ).length;
+        if (successfulDeletions > 0) {
+       
+          setOpenThree(false);
+   
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting boards:", error);
+      });
+  };
 
   console.log(redirect);
 
@@ -587,7 +634,7 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
                   <Chip key={row.id} label={row.subboard_name} variant="outlined" />
                   ))}
                 </Stack>
-                <Button variant="contained" >
+                <Button variant="contained" onClick={handleDelete} >
                   削除
                 </Button>
                   </Box>
