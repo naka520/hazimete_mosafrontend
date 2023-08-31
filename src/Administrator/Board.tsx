@@ -21,12 +21,16 @@ import { GridRowId } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-
+import { useLocation } from 'react-router-dom';
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import {  Link } from "react-router-dom";
 import { TabPanel } from "@mui/lab";
+import axios, { Axios } from "axios";
+import { useBoardContext } from "../BoardContext";
+import internal from "stream";
+import { CardMembership } from "@mui/icons-material";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -41,6 +45,26 @@ declare module "@mui/material/styles" {
   }
 }
 
+type UserType = {
+  user_uuid: string;
+  user_id: string;
+  username: string;
+  display_name: string;
+  line_user: null | any;
+};
+
+type SubboardType = {
+  id: string;
+  subboard_name: string;
+  // members: UserType[];
+  members_count: string;
+};
+
+type RowType = {
+  membercount: string;
+  id: string;
+  subboards: SubboardType[];
+};
 const theme = createTheme({
   palette: {
     primary: {
@@ -55,6 +79,7 @@ const theme = createTheme({
   },
 });
 
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -68,23 +93,38 @@ const style = {
   p: 4,
 };
 
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ロール名", width: 170 },
-  { field: "members", headerName: "人数", width: 130 },
+// const columns: GridColDef[] = [
+//   { field: "subboard", headerName: "ロール名", width: 170 },
+//   { field: "membercount", headerName: "人数", width: 130 },
+// ];
+
+const columns = [
+  { field: 'id', headerName: 'ID', width: 90 },
+  { field: 'subboard_name', headerName: 'ロール名', width: 200 }, // 追加
+  { field: 'members_count', headerName: '人数', type: 'number', width: 130 },
 ];
 
-const rows = [
-  { id: "体育祭", members: "4" },
-  { id: "文化祭", members: "2" },
-  { id: "入学式", members: "7" },
-  { id: "卒業式", members: "29" },
-  { id: "飲み会", members: "2" },
-];
+
+// type RowType = {
+//   membercount: string;
+//   id: string;
+//   subboards: SubboardType[];
+// const rows = [
+//   { id: "体育祭", members: "4" },
+//   { id: "文化祭", members: "2" },
+//   { id: "入学式", members: "7" },
+//   { id: "卒業式", members: "29" },
+//   { id: "飲み会", members: "2" },
+// ];
 
 function Board() {
-  const [value, setValue] = React.useState("1");
 
-  
+  const [value, setValue] = React.useState("1");
+  // const [rows, setRows] = useState([]); 
+  const [mem, setMem] = useState([]); 
+
+  const [itemData, setItemData] = useState<any>(null);
+  const [itemId, setItemId] = useState<number | null>(null);
 
   const handlePage=(event: React.SyntheticEvent, pageValue: string)=>{
     setValue(pageValue);
@@ -103,24 +143,78 @@ function Board() {
   const handleOpenOne = () => setOpenOne(true);
   const handleCloseOne = () => setOpenOne(false);
 
-  const handleOpenTwo = () => setOpenTwo(true);
+  // const handleOpenTwo = () => setOpenTwo(true);
+    const handleOpenTwo = () => setOpenTwo(true);
   const handleCloseTwo = () => setOpenTwo(false);
 
   const handleOpenThree = () => setOpenThree(true);
   const handleCloseThree = () => setOpenThree(false);
 
+  
+  const [selectedRows, setSelectedRows] = useState<SubboardType[]>([]);
+  const[subboardUuid,setsubboardUuid]=useState<string>("");
+  const setstoragesubUuid = (subboardUuid: string) => {
+    localStorage.setItem('subboardUuid', subboardUuid);
+  };
+  
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+
+    setSelectedRows(rows.filter((row) => selectionModel.includes(row.id)));
     setIsCheckboxSelected(selectionModel.length > 0);
+    // if (selectionModel.length > 0) {
+    //   setsubboardUuid(String(selectionModel[0]));
+    //   setstoragesubUuid(subboardUuid);
+    //   console.log(subboardUuid);
+    // }
     console.log("選択された行のID:", selectionModel);
+
   };
 
   // ログイン確認処理
   const [redirect, setRedirect] = useState(false);
+  const [boardUuid, setBoardUuid] = useState(""); 
+  const [rows, setRows] = useState<SubboardType[]>([]);
+  let accessToken:string = "";
+  
+  const fetchItemData = async (access_token:string, board_uuid:string) => {
+    if (board_uuid !== null) {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`//Stateで管理しているのはaccessTokenなのに注意
+        }
+      };
+
+      try {
+        const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}`, config);
+        setItemData(response2.data.subboards);
+        console.log("response2");
+        console.log(response2.data.subboards);
+      } catch (error) {
+        console.error("Error fetching item data:", error);
+      }
+    }
+  };
+
+  const [subboardname, setsubboardname] = useState("");
+
+  const [postSuccessAlert, setPostSuccessAlert] = useState(false);
+const [postErrorAlert, setPostErrorAlert] = useState(false);
+
+
 
   useEffect(() => {
-    // ローカルストレージからaccess_tokenを取得する
-    const accessToken = localStorage.getItem("access_token");
+    // ローカルストレージからBoard_idを取得する
+    const board_uuid = localStorage.getItem("boardUuid") as string
+    setBoardUuid(board_uuid);
 
+    // ローカルストレージからaccess_tokenを取得する
+    accessToken = localStorage.getItem("access_token") as string;
+
+    // APIを叩く
+    fetchData(accessToken);
+    // fetchItemData(accessToken, board_uuid);
+    fetchData2(accessToken, board_uuid);
+    
     // access_tokenが存在する場合はログイン済みとみなす
     if (!accessToken) {
       localStorage.setItem("redirect_path", window.location.pathname);
@@ -128,18 +222,206 @@ function Board() {
     } else {
       localStorage.removeItem("redirect_path");
     }
-  }, []);
+
+
+
+
+
+  }, [accessToken,boardUuid]);
+
+  const createsubboards = () =>{
+    console.log("ok");
+    const accessToken = localStorage.getItem("access_token");
+    const boardUuid = localStorage.getItem("boardUuid"); // 必要な board_uuid を指定してください
+    
+    console.log(accessToken);
+    console.log(boardUuid);
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+         subboard_name: subboardname  // NewRole は新しいロールのデータを保持する状態変数と仮定
+         // 他の必要なフィールドもこちらに
+      }),
+    };
+    
+    let nextUrl = null;
+    fetch(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}/subboard`, requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          window.location.reload()
+          return response.json(); // レスポンスをJSONとしてパース
+        } else {
+          // エラーハンドリング
+          setPostErrorAlert(true); // 失敗アラートを表示
+          throw new Error("Failed to fetch");
+        }
+      })
+      // .then(async (data) => {
+      //   // パースしたJSONデータを使った処理
+      //   setPostSuccessAlert(true); // 成功アラートを表示
+      //   setOpenOne(false);  // モーダルを閉じる
+
+      //   nextUrl = data.Location; // 例：dataオブジェクト内にnextUrlというキーがあると仮定
+      //   const config = {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`
+      //     }
+      //   }
+      //   await axios.get(nextUrl, config)
+      //     .then(response => {
+      //         const newRow : SubboardType = {
+      //           id: response.data.subboard_uuid,
+      //           subboard_name: response.data.subboard_name,
+      //           members_count: response.data.members.length
+      //         }
+      //         setRows((prevRows) => [...prevRows, newRow]);
+      //       }
+      //     )
+      //     .catch(err => console.log(err))
+        
+      // })
+      .catch((error) => {
+        // ネットワークエラーなどのハンドリング
+        console.log(error);
+        setPostErrorAlert(true); // 失敗アラートを表示
+      });
+  }
+
+  const fetchData = async (access_token:string) => {
+    try {
+      const response = await axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/boards', {
+        headers: {
+          Authorization: `Bearer ${access_token}`, // 認証用に追加(401対策)
+        },
+      });
+      const data = response.data;
+      console.log('Fetched Data:', data);
+      setItemId(response.data.board_uuid);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    
+  };
+
+  const fetchData2 = async (access_token: string, board_uuid: string) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    };
+  
+    try {
+      const response = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${board_uuid}`, config);
+      const apiResponse: { subboards: SubboardType[] } = response.data.subboards;
+  
+      if (apiResponse && Array.isArray(apiResponse)) {
+        const formattedRows: SubboardType[] = apiResponse.map((subboard) => {
+          return {
+            id: subboard.subboard_uuid,
+            // subboards: [{
+            //   subboard_uuid: subboard.subboard_uuid,
+            //   subboard_name: subboard.subboard_name,
+            //   members: subboard.members || []
+            // }],
+            subboard_name: subboard.subboard_name,
+            // members:subboard.members || [],
+            members_count: subboard.members.length
+          };
+        });
+        setRows(formattedRows);
+        console.log(formattedRows);
+      } else {
+        console.warn("API response is not in the expected format.");
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   const fetchItemData = async () => {
+  //     if (itemId !== null) {
+  //       const config = {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`
+  //         }
+  //       };
+
+  //       try {
+  //         const response2 = await axios.get(`https://mosa-cup-backend.azurewebsites.net/api/v1/board/${itemId}`, config);
+  //         setItemData(response2.data);
+  //         console.log(response2.data);
+  //       } catch (error) {
+  //         console.error("Error fetching item data:", error);
+  //       }
+  //     }
+  //   };
+
+  //   fetchItemData();
+  // }, [itemId, accessToken]);
+
+  const handleDelete = () => {
+    const accessToken = localStorage.getItem("access_token");
+    // const getsubUuid = localStorage.getItem("subboardUuid") as string
+    // console.log(getsubUuid);
+    const deleteRequests = selectedRows.map((rowId) => {
+      const row = selectedRows.find((row) => row.id ===  (rowId as any).id);
+      console.log(row);
+      if (!row) {
+        console.error("Invalid row:", rowId);
+        return null;
+      }
+      const deleteBoardEndpointUrl = `https://mosa-cup-backend.azurewebsites.net/api/v1/board/${boardUuid}/subboard/${subboardUuid}`;
+      const requestOptions = {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          accept: "application/json",
+        },
+      };
+      return fetch(deleteBoardEndpointUrl, requestOptions);
+    });
+
+    Promise.all(deleteRequests)
+      .then((responses) => {
+        const successfulDeletions = responses.filter(
+          (response) => response && response.ok
+        ).length;
+        if (successfulDeletions > 0) {
+       
+          setOpenThree(false);
+   
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting boards:", error);
+      });
+  };
 
   console.log(redirect);
+
   if (redirect) {
     return <Navigate replace to="/Administrator/Login" />;
   }
+
   // ログイン確認処理ここまで
   return (
     <div style={{ height: 400, width: "100%" }}>
       <Header />
       <SubHeader title="体育祭" />
+      
       <React.Fragment>
+        <Box>{boardUuid}</Box>
         <CssBaseline />
         <Container maxWidth="md">
           <Box
@@ -152,6 +434,7 @@ function Board() {
           ></Box>
           <Breadcrumbs aria-label="breadcrumb">
             <Typography color="text.primary">
+              
               <Link to="/Administrator">イベント</Link>
             </Typography>
             <Typography color="text.primary">体育祭</Typography>
@@ -171,7 +454,7 @@ function Board() {
               </Box>
               <TabPanel value="1">
           
-           <Navigate to="/Administrator/Board" />
+           {/* <Navigate to="/Administrator/{$boardUuid}" /> */}
         </TabPanel>
         <TabPanel value="2">
           
@@ -220,11 +503,28 @@ function Board() {
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <TextField
+                    {/* <TextField
                       id="outlined-basic"
                       label="ロール名"
                       variant="outlined"
-                    />
+                      onChange={(event) =>
+                        setsubboardname((prevBoard) => ({
+                          ...prevBoard,
+                          board_name: event.target.value, // 入力された値で board_name を更新
+                        }))
+                      }
+                    /> */}
+                    <TextField
+                    id="outlined-basic"
+                    label="ロール名"
+                    value={subboardname}
+                    placeholder="ロール名"
+                    contentEditable="true"
+                    variant="outlined"
+                    onChange={e => {
+                        setsubboardname(e.target.value)
+                    }}
+                ></TextField>
                   </Box>
                   <Box
                     sx={{
@@ -235,8 +535,8 @@ function Board() {
                     }}
                   ></Box>
                   <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
-                      ロール作成
+                    <Button variant="contained" sx={{ color: "#FFFFFF" }} onClick={createsubboards} >
+                      ロール登録
                     </Button>
                   </Box>
                 </Box>
@@ -327,43 +627,17 @@ function Board() {
                 aria-describedby="modal-modal-description-1"
               >
                 <Box sx={style}>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h2"
-                  >
-                    ロール削除
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "3vh",
-                    }}
-                  ></Box>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="body1" style={{ margin: 0 }}>
-                      削除するロール：
-                    </Typography>
-
-                    <Chip label="体育祭" variant="outlined" />
-                    <Chip label="文化祭" variant="outlined" />
-                  </Stack>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "6vh",
-                    }}
-                  ></Box>
-                  <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
-                      削除
-                    </Button>
+                <Typography variant="h6">ロール削除</Typography>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography variant="body1">削除するロール：</Typography>
+                  {selectedRows.map((row) => (
+                  <Chip key={row.id} label={row.subboard_name} variant="outlined" />
+                  ))}
+                </Stack>
+                <Button variant="contained" onClick={handleDelete} >
+                  削除
+                </Button>
                   </Box>
-                </Box>
               </Modal>
             </ThemeProvider>
           </Stack>

@@ -1,4 +1,4 @@
-// import { Link } from "react-router-dom";
+
 import Header from "./header";
 import * as React from "react";
 import Button from "@mui/material/Button";
@@ -71,6 +71,11 @@ type Row = {
   isSelected: boolean;
 };
 
+// クリック時の処理
+const handleLinkClick = (uuid: string) => {
+  localStorage.setItem("boardUuid", uuid);
+};
+
 const columns: GridColDef[] = [
   { field: "id", headerName: "イベントID", width: 130 },
   {
@@ -78,7 +83,12 @@ const columns: GridColDef[] = [
     headerName: "イベント名",
     width: 170,
     renderCell: (params) => (
-      <Link to={`/Administrator/${params.row.board_uuid}`}>{params.value}</Link>
+      <Link 
+        to={`/Administrator/${params.row.board_uuid}`}
+        onClick={() => handleLinkClick(params.row.board_uuid as string)}
+      >
+        {params.value}
+      </Link>
     ),
   },
   { field: "members", headerName: "人数", width: 130 },
@@ -112,6 +122,10 @@ function Administrator() {
     setIsCheckboxSelected(selectionModel.length > 0);
     console.log("選択された行のID:", selectionModel);
     setSelectedDeleteRows(selectionModel);
+  };
+  
+  const setBoardUuid = (id:string) => {
+    localStorage.setItem("boardUuid", id);
   };
 
   const getBoardEndpointUrl =
@@ -491,3 +505,4 @@ function Administrator() {
 }
 
 export default Administrator;
+
