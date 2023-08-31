@@ -79,6 +79,7 @@ const theme = createTheme({
   },
 });
 
+
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -102,6 +103,7 @@ const columns = [
   { field: 'subboard_name', headerName: 'ロール名', width: 200 }, // 追加
   { field: 'members_count', headerName: '人数', type: 'number', width: 130 },
 ];
+
 
 // type RowType = {
 //   membercount: string;
@@ -147,10 +149,16 @@ function Board() {
 
   const handleOpenThree = () => setOpenThree(true);
   const handleCloseThree = () => setOpenThree(false);
+
+  
+  const [selectedRows, setSelectedRows] = useState<SubboardType[]>([]);
   
   const handleSelectionModelChange = (selectionModel: GridRowId[]) => {
+
+    setSelectedRows(rows.filter((row) => selectionModel.includes(row.id)));
     setIsCheckboxSelected(selectionModel.length > 0);
     console.log("選択された行のID:", selectionModel);
+
   };
 
   // ログイン確認処理
@@ -572,43 +580,17 @@ const [postErrorAlert, setPostErrorAlert] = useState(false);
                 aria-describedby="modal-modal-description-1"
               >
                 <Box sx={style}>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h2"
-                  >
-                    ロール削除
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "3vh",
-                    }}
-                  ></Box>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="body1" style={{ margin: 0 }}>
-                      削除するロール：
-                    </Typography>
-
-                    <Chip label="体育祭" variant="outlined" />
-                    <Chip label="文化祭" variant="outlined" />
-                  </Stack>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      minHeight: "6vh",
-                    }}
-                  ></Box>
-                  <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button variant="contained" sx={{ color: "#FFFFFF" }}>
-                      削除
-                    </Button>
+                <Typography variant="h6">ロール削除</Typography>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography variant="body1">削除するロール：</Typography>
+                  {selectedRows.map((row) => (
+                  <Chip key={row.id} label={row.subboard_name} variant="outlined" />
+                  ))}
+                </Stack>
+                <Button variant="contained" >
+                  削除
+                </Button>
                   </Box>
-                </Box>
               </Modal>
             </ThemeProvider>
           </Stack>
