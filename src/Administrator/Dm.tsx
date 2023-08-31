@@ -278,7 +278,7 @@ const DM: React.FC = () => {
                     </TabList>
                   </Box>
                   <TabPanel value="1">
-                    {/* ロール登録の内容 */}
+                  <Navigate to="/Administrator/{$boardUuid}" />
                   </TabPanel>
                   <TabPanel value="2">
                     {/* DM の内容 */}
