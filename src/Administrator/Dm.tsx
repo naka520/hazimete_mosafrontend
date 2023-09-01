@@ -524,7 +524,7 @@ import {
   Breadcrumbs,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Header from "./../header";
 import SubHeader from "./../subheader";
@@ -563,7 +563,12 @@ const theme = createTheme({
 const DM: React.FC = () => {
   const [value, setValue] = useState("2");
   const [filteredDmList, setFilteredDmList] = useState<DmData[]>([]);
+
+  const navigate = useNavigate()
+
   useEffect(() => {
+    localStorage.removeItem("direct_message_uuid")
+    localStorage.removeItem("direct_message_to_userUuid")
     const fetchData = async () => {
       const accessToken = localStorage.getItem("access_token");
       const meResponse = await axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/me', {
@@ -572,7 +577,8 @@ const DM: React.FC = () => {
         },
       });
       const userUuid = meResponse.data.user_uuid;
-      const userUuid2 = localStorage.setItem("user_uuid", meResponse.data.user_uuid);
+      console.log(meResponse.data);
+      localStorage.setItem("user_uuid", meResponse.data.user_uuid);
       const dmResponse = await axios.get('https://mosa-cup-backend.azurewebsites.net/api/v1/direct_messages', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -604,11 +610,13 @@ const DM: React.FC = () => {
   };
 
  // ... 他のインポート ...
-  const handleDmClick = (directMessageUuid: string) => {
+  const handleDmClick = (directMessageUuid: string, to_userUuid: string) => {
   console.log(`Clicked DM with direct_message_uuid: ${directMessageUuid}`);
   const message = directMessageUuid;
   localStorage.setItem("direct_message_uuid", message);
+  localStorage.setItem("direct_message_to_userUuid", to_userUuid);
   // ここにクリック時の追加処理を書くことも可能
+  navigate("/Administrator/DmPanel")
 };
 
   return (
@@ -662,8 +670,8 @@ const DM: React.FC = () => {
                         <React.Fragment key={dm.direct_message_uuid}>
                           <ListItem
                             alignItems="flex-start"
-                            component={Link}
-                            to={`/Administrator/DmPanel`}
+                            // component={Link}
+                            // to={`/Administrator/DmPanel`}
                             sx={{
                               backgroundColor: "#06C756",
                               color: "#FFFFFF",
@@ -683,7 +691,7 @@ const DM: React.FC = () => {
                                   {dm.scheduled_send_time}
                                 </React.Fragment>
                               }
-                              onClick={() => handleDmClick(dm.direct_message_uuid)}
+                              onClick={() => handleDmClick(dm.direct_message_uuid, dm.send_to.user_uuid)}
                             />
                           </ListItem>
                           <Divider component="li" />

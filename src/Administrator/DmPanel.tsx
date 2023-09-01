@@ -447,9 +447,10 @@ const theme = createTheme({
 const DmPanel: React.FC = () => {
   const [apiMessages, setApiMessages] = useState<ApiMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
-
-  const userUuid = localStorage.getItem('user_uuid'); // ローカルストレージからuser_uuidを取得
-
+  const [userUuid, setUserUuid] = useState(localStorage.getItem('user_uuid'))
+  const [toUserUuid, setToUserUuid] = useState(localStorage.getItem('direct_message_to_userUuid'))
+  // const userUuid = localStorage.getItem('user_uuid'); // ローカルストレージからuser_uuidを取得
+  
   useEffect(() => {
     const fetchData = async () => {
       const accessToken = localStorage.getItem('access_token'); // アクセストークンをローカルストレージから取得
@@ -461,9 +462,24 @@ const DmPanel: React.FC = () => {
         });
 
         console.log(response.data);
-
+        // const send_user_uuid = localStorage.setItem('send_user_uuid',response.data.send_to.user_uuid);
         if (Array.isArray(response.data)) {
-          setApiMessages(response.data);
+
+          // 該当User以外のメッセージオブジェクトを排除して格納する。
+          let messageList = [];
+          for (let i = 0; i < response.data.length; i++) {
+            console.log(response.data[i]);
+            if (response.data[i].send_to.user_uuid === toUserUuid) {
+              messageList.push(response.data[i]);
+            }
+          }
+          // setApiMessages(response.data);
+          console.log(messageList);
+          
+          // 正確な送り手へのメッセージ
+          setApiMessages(messageList);
+
+          // localStorage.setItem('user_uuid', apiMessages[0].send_to.user_uuid);
         } else {
           console.error('Received data is not an array:', response.data);
         }
@@ -481,11 +497,45 @@ const DmPanel: React.FC = () => {
     setInputValue(event.target.value);
   };
 
-  const handleSendMessage = () => {
-    console.log('Sending message:', inputValue);
-    // ここでメッセージ送信のAPIを叩くなど
-    setInputValue(''); // メッセージ送信後は入力フィールドを空にする
+
+  const handleSendMessage = async () => {
+    const accessToken = localStorage.getItem('access_token'); // アクセストークンをローカルストレージから取得
+    const sendToNames = localStorage.getItem('send_user_uuid');; // 送信先ユーザー名の配列（この部分は適切に設定してください）
+  
+    // 現在の日時を取得し、ISO 8601形式（"2023-09-01T15:18:01.003Z"）でフォーマット
+    const now = new Date();
+    const scheduledSendTime = now.toISOString();
+  
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+      },
+      body: JSON.stringify({
+        send_to_names: sendToNames,
+        body: inputValue,
+        scheduled_send_time: scheduledSendTime
+      }),
+    };
+  
+    try {
+      const response = await fetch('https://mosa-cup-backend.azurewebsites.net/api/v1/direct_messages', requestOptions);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Message sent:', data);
+        setInputValue(''); // 成功したら、テキストフィールドを空にする
+        // ここでメッセージリストを更新するロジックも追加できる（例えば、新しく送られたメッセージをapiMessagesに追加など）
+      } else {
+        console.error('Failed to send message:', await response.json());
+      }
+    } catch (error) {
+      console.error('An error occurred while sending the message:', error);
+    }
   };
+  
+
 
   return (
     <div>
@@ -524,29 +574,31 @@ const DmPanel: React.FC = () => {
                   }}
                 >
                   <CardContent>
-  {message.send_from.user_uuid === userUuid ? (
-    <>
-      <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
-        From: {message.send_from.display_name}
-      </Typography>
-      <Typography variant="body1">{message.body}</Typography>
-      <Typography variant="caption" color="textSecondary" sx={{ alignSelf: 'flex-end', marginTop: 1 }}>
-        {message.scheduled_send_time}
-      </Typography>
-    </>
-  ) : (
-    <>
-      <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
-        To: {message.send_to.display_name}
-      </Typography>
-      <Typography variant="body1">{message.body}</Typography>
-      <Typography variant="caption" color="textSecondary" sx={{ alignSelf: 'flex-end', marginTop: 1 }}>
-        {message.scheduled_send_time}
-      </Typography>
-    </>
-  )}
-</CardContent>
-
+                    {message.send_from.user_uuid === userUuid ? (
+                      <>
+                        <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
+                          From: {message.send_from.display_name}
+                        </Typography>
+                        <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
+                          To: {message.send_to.display_name}
+                        </Typography>
+                        <Typography variant="body1">{message.body}</Typography>
+                        <Typography variant="caption" color="textSecondary" sx={{ alignSelf: 'flex-end', marginTop: 1 }}>
+                          {message.scheduled_send_time}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography variant="subtitle2" sx={{ marginBottom: 1 }}>
+                          To: {message.send_to.display_name}
+                        </Typography>
+                        <Typography variant="body1">{message.body}</Typography>
+                        <Typography variant="caption" color="textSecondary" sx={{ alignSelf: 'flex-end', marginTop: 1 }}>
+                          {message.scheduled_send_time}
+                        </Typography>
+                      </>
+                    )}
+                  </CardContent>
                 </Card>
               </ListItem>
             ))}
@@ -567,7 +619,7 @@ const DmPanel: React.FC = () => {
                 onChange={handleInputChange}
                 placeholder="メッセージを入力"
               />
-              <Button variant="contained" color="primary" onClick={handleSendMessage} sx={{ marginLeft: 1 }}>
+              <Button variant="contained" color="primary" onClick={() => handleSendMessage()} sx={{ marginLeft: 1 }}>
                 送信
               </Button>
             </Box>
