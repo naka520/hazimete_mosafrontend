@@ -51,6 +51,7 @@ interface LoginResponse {
 // }
 
 interface SignupRequest {
+  user_id:string;
   username: string;
   password: string;
   line_user_uuid?: string;
@@ -67,15 +68,22 @@ interface SignupRequest {
 const AdministratorSignup: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [userid, setuserid] = useState<string>("");
+  const [lineuseruuid, setlineuseruuid] = useState<string>("");
   const navigate = useNavigate();
 
   const endpointUrl =
     "https://mosa-cup-backend.azurewebsites.net/api/v1/signup";
   const handleCheck = async () => {
+    if (!userid || !username || !password) {
+      console.error("All fields are required");
+      return;
+    }
     const requestData: SignupRequest = {
+      user_id: userid,
       username: username,
       password: password,
-      line_user_uuid: undefined,
+      line_user_uuid: "",
     };
 
     try {
@@ -87,6 +95,7 @@ const AdministratorSignup: React.FC = () => {
       navigate("/Administrator/Login");
     } catch (error) {
       console.error("Error:", error);
+      
     }
   };
 
@@ -123,7 +132,19 @@ const AdministratorSignup: React.FC = () => {
             noValidate
             autoComplete="off"
           >
-            <Box sx={{ paddingLeft: "30px" }}>
+            <Box sx={{ paddingLeft: "30px"}}>
+              <TextField
+                id="outlined-basic"
+                label="ユーザーID"
+                variant="outlined"
+                className="bg-white"
+                value={userid}
+                onChange={(e) => {
+                  setuserid(e.target.value);
+                }}
+              />
+            </Box>
+            <Box sx={{ paddingLeft: "30px", paddingTop: "30px" }}>
               <TextField
                 id="outlined-basic"
                 label="ユーザーネーム"
@@ -149,6 +170,7 @@ const AdministratorSignup: React.FC = () => {
                 }}
               />
             </Box>
+
             <ThemeProvider theme={theme}>
               <Box sx={{ paddingLeft: "80px", paddingTop: "30px" }}>
                 <Button variant="contained" onClick={handleCheck}>
